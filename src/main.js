@@ -2,6 +2,7 @@ import './style.css';
 import { state, currentProfile } from './core/store.js';
 import { loadAll, switchTo, saveCurrent } from './core/storage.js';
 import { loadJson } from './core/data.js';
+import { totalStars, kyuOf } from './core/rank.js';
 import { mountStart } from './screens/start.js';
 import { mountProfile } from './screens/profile.js';
 import { mountAdult } from './screens/adult.js';
@@ -23,6 +24,7 @@ async function show(mounter, ...args) {
 async function recordLesson(lessonId) {
   const rec = state.person.lessons[lessonId] || { clears: 0, stars: 0 };
   const first = rec.clears === 0;
+  const oldStars = rec.stars;
   rec.clears++;
   rec.stars = Math.min(3, Math.max(rec.stars, rec.clears));
   state.person.lessons[lessonId] = rec;
@@ -31,11 +33,14 @@ async function recordLesson(lessonId) {
   const before = state.family.level;
   state.family.exp += exp;
   state.family.turns++;
-  const { levels } = await loadJson('levels.json');
+  const { levels, kyu } = await loadJson('levels.json');
+  const ids = (await loadJson('lessons/index.json')).lessons;
+  const kyuBefore = kyuOf(totalStars({ lessons: { ...state.person.lessons, [lessonId]: { stars: oldStars } } }, ids), kyu);
+  const kyuAfter = kyuOf(totalStars(state.person, ids), kyu);
   for (const l of levels) if (state.family.exp >= l.exp) state.family.level = Math.max(state.family.level, l.level);
   const p = currentProfile(); if (p) p.lastPlayed = Date.now();
   await saveCurrent();
-  return { lessonId, stars: rec.stars, exp, levelUp: state.family.level > before };
+  return { lessonId, stars: rec.stars, exp, levelUp: state.family.level > before, kyu: kyuAfter, kyuUp: kyuAfter < kyuBefore };
 }
 
 const nav = {
