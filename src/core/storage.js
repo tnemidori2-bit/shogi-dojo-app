@@ -6,12 +6,15 @@ const ok = (p) => p.catch((e) => { console.warn('save failed', e); emit('saveErr
 
 // 古い形式を読めるようにする（データを捨てない）。形式を変えるときはここに足す。
 function migrateFamily(d) {
-  return { ...defaultFamily(), ...(d || {}), version: DATA_VERSION };
+  const out = { ...defaultFamily(), ...(d || {}), version: DATA_VERSION };
+  if (!out.tsume || typeof out.tsume !== 'object') out.tsume = {}; // 第4段階で追加
+  return out;
 }
 function migratePerson(d) {
   const out = { ...defaultPerson(), ...(d || {}), version: DATA_VERSION };
   if (!out.lessons || typeof out.lessons !== 'object') out.lessons = {};
   if (!out.drills || typeof out.drills !== 'object') out.drills = {}; // 第3段階で追加
+  if (!out.tsume || typeof out.tsume !== 'object') out.tsume = {}; // 第4段階で追加
   return out;
 }
 

@@ -79,3 +79,26 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .lesson .lk.drill { background: transparent; font-size: 32px; }
 .lesson .sub { font-size: 14px; opacity: .65; margin-right: 10px; }
 .sign.on { outline: 4px solid var(--accent); }
+
+/* つめしょうぎ */
+.tsume-screen { --cell: min(calc((100vw - 16px) / 9), calc((100dvh - 400px) / 9)); }
+.actions.wrap { flex-wrap: wrap; }
+.hand { width: min(calc(var(--cell) * 9), 100%); min-height: 56px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 8px; background: var(--bg2); border-radius: 12px; font-size: 16px; }
+.hand .hl { opacity: .8; margin-right: 4px; }
+.hand .none { opacity: .5; }
+.hp { min-width: 64px; min-height: 48px; display: inline-flex; align-items: baseline; justify-content: center; gap: 2px; padding: 4px 12px; border: 3px solid transparent; border-radius: 10px; background: #f7e3b0; color: var(--ink); font-family: inherit; }
+.hp .k { font-size: 28px; font-weight: bold; }
+.hp .n { font-size: 16px; }
+.hp.on { border-color: var(--accent); background: #ffe08a; }
+.hp.hint { box-shadow: 0 0 0 4px rgba(30, 160, 80, .9); }
+.hp:disabled { opacity: .85; }
+.hand.opp .hp { min-height: 40px; }
+.cell.hintcell { box-shadow: inset 0 0 0 4px rgba(30, 160, 80, .9); }
+.tsume-set { width: 100%; display: flex; flex-direction: column; gap: 10px; background: var(--bg2); border-radius: 14px; padding: 12px; }
+.tsume-head { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: bold; }
+.tsume-head .lt { flex: 1; }
+.tsume-head .sub { font-size: 14px; opacity: .75; }
+.nums { display: flex; flex-wrap: wrap; gap: 8px; }
+.num { min-width: 64px; min-height: 64px; border: 0; border-radius: 12px; background: var(--paper); color: var(--ink); font-family: inherit; font-size: 22px; font-weight: bold; }
+.num.done { background: #b9e0b0; }
+.num.done::after { content: ' ✓'; font-size: 16px; }

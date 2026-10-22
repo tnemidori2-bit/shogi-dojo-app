@@ -1,8 +1,8 @@
 import './style.css';
-import { state, currentProfile } from './core/store.js';
+import { state, currentProfile, animalOf } from './core/store.js';
 import { loadAll, switchTo, saveCurrent } from './core/storage.js';
 import { loadJson } from './core/data.js';
-import { totalStars, kyuOf } from './core/rank.js';
+import { totalStars, kyuOf, tsumeStars } from './core/rank.js';
 import { applyStreak } from './shogi/drills.js';
 import { T } from './text.js';
 import { mountStart } from './screens/start.js';
@@ -11,6 +11,7 @@ import { mountAdult } from './screens/adult.js';
 import { mountHome } from './screens/home.js';
 import { mountLesson } from './screens/lesson.js';
 import { mountDrill } from './screens/drill.js';
+import { mountTsume, fmtTime } from './screens/tsume.js';
 import { mountResult } from './screens/result.js';
 
 // 拡大を止める（iOS Safari）
@@ -27,24 +28,26 @@ async function show(mounter, ...args) {
 async function allIds() {
   const lessons = (await loadJson('lessons/index.json')).lessons;
   const drills = (await loadJson('drills/index.json')).drills;
-  return { lessons, drills };
+  const tsume = await Promise.all((await loadJson('tsume/index.json')).sets.map((id) => loadJson(`tsume/${id}.json`)));
+  return { lessons, drills, tsume };
 }
 
 // 1回遊び終えたときの共通の記録：経験値・家族のレベル・「番」・最後に遊んだ日・級
 async function finishSession(exp, applyStars) {
   const { levels, kyu } = await loadJson('levels.json');
   const ids = await allIds();
-  const kyuBefore = kyuOf(totalStars(state.person, ids.lessons, ids.drills), kyu);
+  const kyuBefore = kyuOf(totalStars(state.person, ids.lessons, ids.drills, ids.tsume), kyu);
   applyStars();
-  const kyuAfter = kyuOf(totalStars(state.person, ids.lessons, ids.drills), kyu);
+  const gained = typeof exp === 'function' ? exp() : exp; // 記録を反映したあとで決まる経験値もある（つめしょうぎ）
+  const kyuAfter = kyuOf(totalStars(state.person, ids.lessons, ids.drills, ids.tsume), kyu);
   const before = state.family.level;
   state.person.plays++;
-  state.family.exp += exp;
+  state.family.exp += gained;
   state.family.turns++;
   for (const l of levels) if (state.family.exp >= l.exp) state.family.level = Math.max(state.family.level, l.level);
   const p = currentProfile(); if (p) p.lastPlayed = Date.now();
   await saveCurrent();
-  return { exp, levelUp: state.family.level > before, kyu: kyuAfter, kyuUp: kyuAfter < kyuBefore };
+  return { exp: gained, levelUp: state.family.level > before, kyu: kyuAfter, kyuUp: kyuAfter < kyuBefore };
 }
 
 // レッスン：★は初回=1、2回目=2、3回目以降=3。経験値は初回+2、以降+1
@@ -74,6 +77,35 @@ async function recordDrill(drillId, results) {
   };
 }
 
+// つめしょうぎ：初めて解いたら +2、2回目以降 +1。自己ベスト更新 +1、家族ベスト更新 +2。ヒントを使うと、タイムは記録に載らない
+async function recordTsume(setId, problemId, res) {
+  const set = await loadJson(`tsume/${setId}.json`);
+  const rec = state.person.tsume[problemId] || { solves: 0, best: null, misses: 0 };
+  const first = rec.solves === 0;
+  const prof = currentProfile();
+  const lines = [T.tsumeTime(fmtTime(res.ms))];
+  let exp = first ? 2 : 1;
+  const info = await finishSession(() => exp, () => {
+    rec.solves++;
+    rec.misses += res.misses;
+    if (!res.hinted) {
+      if (rec.best == null || res.ms < rec.best) { if (!first) exp += 1; if (!first) lines.push(T.tsumeMyNew); rec.best = res.ms; }
+      const fam = state.family.tsume[problemId];
+      if (!fam || res.ms < fam.ms) {
+        if (fam) { exp += 2; lines.push(T.tsumeFamilyNew); }
+        state.family.tsume[problemId] = { ms: res.ms, icon: prof?.icon || 'turtle', name: prof?.name || '', at: Date.now() };
+      }
+    } else lines.push(T.tsumeNoRecord);
+    state.person.tsume[problemId] = rec;
+  });
+  const fam = state.family.tsume[problemId];
+  if (rec.best != null) lines.push(T.tsumeMyBest(fmtTime(rec.best)));
+  if (fam) lines.push(T.tsumeFamilyBest(fmtTime(fam.ms), fam.name || animalOf(fam.icon).label));
+  const idx = set.problems.findIndex((p) => p.id === problemId);
+  const next = set.problems[(idx + 1) % set.problems.length];
+  return { ...info, kind: 'tsume', setId, id: problemId, nextId: next.id, stars: tsumeStars(state.person, set), lines };
+}
+
 const nav = {
   start: () => show(mountStart),
   profile: async () => { await switchTo(null); await show(mountProfile); },
@@ -82,6 +114,8 @@ const nav = {
   home: () => show(mountHome),
   lesson: (id) => show(mountLesson, id),
   drill: (id) => show(mountDrill, id),
+  tsume: (setId, problemId) => show(mountTsume, setId, problemId),
+  tsumeResult: async (setId, problemId, res) => show(mountResult, await recordTsume(setId, problemId, res)),
   result: async (id) => show(mountResult, await recordLesson(id)),
   drillResult: async (id, results) => show(mountResult, await recordDrill(id, results)),
 };

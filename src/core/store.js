@@ -17,6 +17,7 @@ export const defaultFamily = () => ({
   level: 1,
   exp: 0,
   turns: 0, // 「番」＝誰かが遊びを1回終えた数
+  tsume: {}, // 家族ベスト：問題id → { ms, icon, name, at }
   createdAt: Date.now(),
 });
 
@@ -26,6 +27,7 @@ export const defaultPerson = () => ({
   difficulty: 'normal',
   lessons: {},
   drills: {},
+  tsume: {}, // 問題id → { solves, best(ミリ秒), misses }
   plays: 0,
 });
 
