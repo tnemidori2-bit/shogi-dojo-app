@@ -46,6 +46,8 @@ export const T = {
   correct: 'せいかい！',
   correctHint: 'せいかい！（ヒントを つかったので れんぞくには かぞえないよ）',
   wrongMoves: 'おしい！ みどりが こたえ、あかは ちがう ばしょ だよ',
+  wrongMovesExtra: (n) => `あっていたけど、${n}か所 おおかったよ。あかい ばしょは いけない ばしょ だよ`,
+  wrongMovesMissed: (n) => `あと ${n}か所 たりなかったよ。みどりの ばしょにも いけるよ`,
   wrongCapture: 'ざんねん。みどりの わくが とれる 駒 だよ',
   wrongCheck: 'そこは 王手に ならないよ。みどりの ばしょが 王手だよ',
   hintMoves: 'ヒント：ひかった ばしょが こたえ',

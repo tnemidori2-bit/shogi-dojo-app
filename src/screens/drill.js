@@ -6,6 +6,11 @@ import { makeQuestion, judge } from '../shogi/drills.js';
 import { sfx } from '../core/audio.js';
 import { toast } from '../ui.js';
 
+// 問題文の {piece} を、いま動かす駒の名前に（例：金（きん））
+const askText = (drill, q, pieces) => {
+  const d = defOf({ t: q.piece.t, p: q.piece.p }, pieces);
+  return drill.ask.replace('{piece}', `ひかっている ${d.kanji}（${d.yomi}）`);
+};
 const same = (a, b) => a.x === b.x && a.y === b.y;
 const has = (arr, c) => arr.some((a) => same(a, c));
 
@@ -37,7 +42,7 @@ export async function mountDrill(root, nav, drillId) {
     q = makeQuestion(drill, pieces);
     picked = q.type === 'moves' ? [] : null;
     sel = false; hinted = false; answered = false; verdict = null;
-    msg = drill.ask;
+    msg = askText(drill, q, pieces);
     draw();
   }
 
@@ -63,7 +68,7 @@ export async function mountDrill(root, nav, drillId) {
       if (c) {
         const d = defOf(c, pieces);
         const k = c.s === 1 && d.kanjiGote ? d.kanjiGote : d.kanji;
-        p = `<span class="piece ${c.s === 1 ? 'gote' : 'sente'} ${c.p ? 'promoted' : ''} ${isFrom ? '' : 'dim0'}">${k}</span>`;
+        p = `<span class="piece ${c.s === 1 ? 'gote' : 'sente'} ${c.p ? 'promoted' : ''} ${isFrom || c.s === 1 ? '' : 'dim'}">${k}</span>`;
       }
       html += `<button type="button" class="${cls.join(' ')}" data-x="${x}" data-y="${y}" aria-label="${x + 1},${y + 1}">${p}</button>`;
     }
@@ -94,6 +99,10 @@ export async function mountDrill(root, nav, drillId) {
     } else {
       results.push('ng');
       msg = { moves: T.wrongMoves, capture: T.wrongCapture, check: T.wrongCheck }[q.type]; sfx('no');
+      if (q.type === 'moves') {
+        if (verdict.missed.length === 0) msg = T.wrongMovesExtra(verdict.extra.length);
+        else if (verdict.extra.length === 0) msg = T.wrongMovesMissed(verdict.missed.length);
+      }
     }
     draw();
   }
@@ -114,7 +123,7 @@ export async function mountDrill(root, nav, drillId) {
       picked = at; sfx('select'); submit(at); return;
     }
     // check：青い駒をタップ → 行き先をタップ
-    if (same(at, q.from)) { sel = true; sfx('select'); msg = drill.ask; draw(); return; }
+    if (same(at, q.from)) { sel = true; sfx('select'); msg = askText(drill, q, pieces); draw(); return; }
     if (!sel) { sfx('no'); msg = T.pickPieceFirst; draw(); return; }
     if (!has(q.legal, at)) { sfx('no'); msg = T.cantMove; draw(); return; }
     picked = at; sfx('move'); submit(at);
