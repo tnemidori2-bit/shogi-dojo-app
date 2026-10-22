@@ -16,6 +16,8 @@ function migratePerson(d) {
   if (!out.drills || typeof out.drills !== 'object') out.drills = {}; // 第3段階で追加
   if (!out.tsume || typeof out.tsume !== 'object') out.tsume = {}; // 第4段階で追加
   if (!out.openings || typeof out.openings !== 'object') out.openings = {}; // 第5段階で追加
+  out.match = { ...defaultPerson().match, ...(out.match || {}) }; // 第6段階で追加
+  out.match.prefs = { ...defaultPerson().match.prefs, ...(out.match.prefs || {}) };
   return out;
 }
 

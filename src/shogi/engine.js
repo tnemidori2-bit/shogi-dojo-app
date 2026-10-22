@@ -50,7 +50,7 @@ export function applyFull(board, hands, move, side) {
 }
 
 // 打てるマスか：二歩・行きどころのない駒を除く
-function dropOk(board, t, side, x, y) {
+export function dropOk(board, t, side, x, y) {
   const far = side === 0 ? y : SIZE - 1 - y; // 敵の最奥から数えた段（0が最奥）
   if (t === 'fu' || t === 'kyo') { if (far === 0) return false; }
   if (t === 'kei' && far <= 1) return false;

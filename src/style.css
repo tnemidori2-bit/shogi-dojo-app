@@ -108,3 +108,10 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .btn:disabled { opacity: .4; }
 .tsume-set .note { margin: 0; line-height: 1.5; }
 .legend { margin: 0; font-size: 14px; opacity: .75; text-align: center; }
+
+/* たいきょく */
+.opt-title { font-size: 16px; opacity: .85; margin-top: 4px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opts.hidden, .opt-title.hidden, .note.hidden { display: none; }
+.opts .btn.on { background: var(--accent); }
+.btn.danger { background: #e8a198; }

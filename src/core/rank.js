@@ -15,12 +15,18 @@ export function openingStars(person, id) {
   return r ? (r.learned ? 1 : 0) + (r.clears > 0 ? 1 : 0) + (r.perfect ? 1 : 0) : 0;
 }
 
+// たいきょくの★：駒落ちなしで勝ったことのある強さの数（最大3）
+export function matchStars(person) {
+  const w = person?.match?.wins || {};
+  return ['weak', 'normal', 'strong'].filter((l) => (w[l] || 0) > 0).length;
+}
+
 export function totalStars(person, lessonIds, drillIds = [], tsumeSets = [], openingIds = []) {
   const l = lessonIds.reduce((sum, id) => sum + (person?.lessons?.[id]?.stars || 0), 0);
   const d = drillIds.reduce((sum, id) => sum + (person?.drills?.[id]?.stars || 0), 0);
   const t = tsumeSets.reduce((sum, set) => sum + tsumeStars(person, set), 0);
   const o = openingIds.reduce((sum, id) => sum + openingStars(person, id), 0);
-  return l + d + t + o;
+  return l + d + t + o + matchStars(person);
 }
 
 export function kyuOf(stars, kyuTable) {

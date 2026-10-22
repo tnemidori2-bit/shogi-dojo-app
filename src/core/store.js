@@ -29,6 +29,7 @@ export const defaultPerson = () => ({
   drills: {},
   tsume: {}, // 問題id → { solves, best(ミリ秒), misses }
   openings: {}, // 戦法id → { learned, clears, perfect, misses }
+  match: { plays: 0, wins: {}, losses: {}, draws: 0, handicapWins: 0, prefs: { level: 'weak', side: 0, handicap: 'none' } }, // たいきょく
   plays: 0,
 });
 

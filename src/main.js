@@ -2,7 +2,7 @@ import './style.css';
 import { state, currentProfile, animalOf } from './core/store.js';
 import { loadAll, switchTo, saveCurrent } from './core/storage.js';
 import { loadJson } from './core/data.js';
-import { totalStars, kyuOf, tsumeStars, openingStars } from './core/rank.js';
+import { totalStars, kyuOf, tsumeStars, openingStars, matchStars } from './core/rank.js';
 import { applyStreak } from './shogi/drills.js';
 import { T } from './text.js';
 import { mountStart } from './screens/start.js';
@@ -13,6 +13,7 @@ import { mountLesson } from './screens/lesson.js';
 import { mountDrill } from './screens/drill.js';
 import { mountTsume, fmtTime } from './screens/tsume.js';
 import { mountOpening } from './screens/opening.js';
+import { mountMatch } from './screens/match.js';
 import { mountResult } from './screens/result.js';
 
 // 拡大を止める（iOS Safari）
@@ -131,6 +132,30 @@ async function recordOpening(id, mode, res) {
   return { ...info, kind: 'opening', id, mode, stars: openingStars(state.person, id), lines };
 }
 
+// たいきょく：勝ち +3（駒落ちなしで初めてその強さに勝てば +2）、負け・引き分け・投了 +1。★は、駒落ちなしで勝てた強さの数
+async function recordMatch(res) {
+  const m = state.person.match;
+  let exp = 1;
+  const lines = [];
+  const info = await finishSession(() => exp, () => {
+    m.plays++;
+    if (res.outcome === 'win') {
+      exp = 3;
+      if (res.handicap === 'none') {
+        if (!(m.wins[res.level] > 0)) { exp += 2; lines.push(T.matchFirstWin(T.levelLabel[res.level])); }
+        m.wins[res.level] = (m.wins[res.level] || 0) + 1;
+      } else m.handicapWins++;
+    } else if (res.outcome === 'loss') m.losses[res.level] = (m.losses[res.level] || 0) + 1;
+    else m.draws++;
+    m.prefs = { level: res.level, side: res.me, handicap: res.handicap };
+  });
+  lines.push(T.expGain(exp));
+  if (info.levelUp) lines.push(T.levelUp(state.family.level));
+  lines.push(info.kyuUp ? T.rankUp(info.kyu) : T.rank(info.kyu));
+  lines.push(T.starsNow(matchStars(state.person)));
+  return { ...info, exp, lines };
+}
+
 const nav = {
   start: () => show(mountStart),
   profile: async () => { await switchTo(null); await show(mountProfile); },
@@ -139,6 +164,8 @@ const nav = {
   home: () => show(mountHome),
   lesson: (id) => show(mountLesson, id),
   drill: (id) => show(mountDrill, id),
+  match: (cfg) => show(mountMatch, cfg),
+  matchRecord: (res) => recordMatch(res),
   opening: (id, mode) => show(mountOpening, id, mode),
   openingResult: async (id, mode, res) => show(mountResult, await recordOpening(id, mode, res)),
   tsume: (setId, problemId) => show(mountTsume, setId, problemId),
