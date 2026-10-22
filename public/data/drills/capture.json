@@ -1,0 +1,19 @@
+{
+  "id": "capture",
+  "title": "とれる 駒",
+  "type": "capture",
+  "pool": [
+    "fu",
+    "kyo",
+    "kei",
+    "gin",
+    "kin",
+    "kaku",
+    "hi",
+    "+kaku",
+    "+hi"
+  ],
+  "rounds": 5,
+  "ask": "ひかっている 駒で とれる あいての 駒を 1つ タップしてね",
+  "icon": "🎯"
+}

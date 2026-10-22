@@ -20,11 +20,12 @@ export const defaultFamily = () => ({
   createdAt: Date.now(),
 });
 
-// 人ごとのデータ。lessons[id] = { clears, stars }
+// 人ごとのデータ。lessons[id] = { clears, stars }、drills[id] = { streak, best, stars, plays, correct }
 export const defaultPerson = () => ({
   version: DATA_VERSION,
   difficulty: 'normal',
   lessons: {},
+  drills: {},
   plays: 0,
 });
 

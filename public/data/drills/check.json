@@ -1,0 +1,18 @@
+{
+  "id": "check",
+  "title": "王手（おうて）",
+  "type": "check",
+  "pool": [
+    "kyo",
+    "kei",
+    "gin",
+    "kin",
+    "kaku",
+    "hi",
+    "+kaku",
+    "+hi"
+  ],
+  "rounds": 5,
+  "ask": "ひかっている 駒を うごかして、あいての 玉に 王手に なる ばしょを えらんでね",
+  "icon": "👑"
+}

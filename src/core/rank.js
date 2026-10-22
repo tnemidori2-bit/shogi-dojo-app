@@ -1,6 +1,8 @@
-// 級：全レッスンの★の合計で決まる（しきい値は levels.json の kyu）
-export function totalStars(person, lessonIds) {
-  return lessonIds.reduce((sum, id) => sum + (person?.lessons?.[id]?.stars || 0), 0);
+// 級：全レッスンと全ドリルの★の合計で決まる（しきい値は levels.json の kyu）
+export function totalStars(person, lessonIds, drillIds = []) {
+  const l = lessonIds.reduce((sum, id) => sum + (person?.lessons?.[id]?.stars || 0), 0);
+  const d = drillIds.reduce((sum, id) => sum + (person?.drills?.[id]?.stars || 0), 0);
+  return l + d;
 }
 
 export function kyuOf(stars, kyuTable) {

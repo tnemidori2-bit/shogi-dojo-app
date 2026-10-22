@@ -111,3 +111,51 @@ test('金と玉は成れない', () => {
   const b = parseBoard(['. . . . . . . . .','. . . . . . . . .','. . . . G . . . .','. . . . . . . . .','. . . . . . . . .','. . . . . . . . .','. . . . . . . . .','. . . . . . . . .','. . . . . . . . .']);
   assert.ok(!canPromote(b, { x: 4, y: 2 }, { x: 4, y: 1 }, pieces));
 });
+
+// ---- ドリル ----
+import { makeQuestion, judge, applyStreak, starsOf } from '../src/shogi/drills.js';
+const drillDir = new URL('../public/data/drills/', import.meta.url);
+const drillIds = JSON.parse(readFileSync(new URL('index.json', drillDir))).drills;
+
+// 再現できる乱数
+function seeded(seed) { let s = seed; return () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; }; }
+
+for (const id of drillIds) {
+  test(`ドリル ${id}: 問題が作れて、答えが正しい（500問）`, () => {
+    const drill = JSON.parse(readFileSync(new URL(`${id}.json`, drillDir)));
+    assert.ok(drill.pool.every((p) => pieces[p.replace('+', '')]));
+    const rng = seeded(12345);
+    for (let i = 0; i < 500; i++) {
+      const q = makeQuestion(drill, pieces, rng);
+      assert.ok(q.answers.length >= 1);
+      assert.ok(judge(q, q.type === 'moves' ? q.answers : q.answers[0]).ok);
+      if (q.type === 'moves') assert.ok(!judge(q, []).ok);
+      else {
+        // 答えでない選び方があり、それを選ぶと不正解（とれる問題は取れない敵の駒、王手は王手にならない合法手）
+        const isAns = (m) => q.answers.some((a) => a.x === m.x && a.y === m.y);
+        let wrong;
+        if (q.type === 'capture') {
+          q.board.forEach((r, y) => r.forEach((c, x) => { if (c && c.s === 1 && !isAns({ x, y })) wrong = { x, y }; }));
+        } else wrong = q.legal.find((m) => !isAns(m));
+        assert.ok(wrong && !judge(q, wrong).ok);
+      }
+    }
+  });
+}
+test('ドリル: 王手の問題は、最初から王手になっていない', () => {
+  const rng = seeded(7);
+  const drill = { type: 'check', pool: ['kyo', 'kei', 'gin', 'kin', 'kaku', 'hi', '+kaku', '+hi'] };
+  for (let i = 0; i < 300; i++) {
+    const q = makeQuestion(drill, pieces, rng);
+    let king = null;
+    q.board.forEach((r, y) => r.forEach((c, x) => { if (c && c.t === 'gyoku') king = { x, y }; }));
+    assert.ok(!movesFor(q.board, q.from.x, q.from.y, pieces).some((m) => m.x === king.x && m.y === king.y));
+  }
+});
+test('連続正解: 途切れたら0、ヒントは数えず途切れもしない、★は3・5・8', () => {
+  let r = applyStreak(null, ['ok', 'ok', 'ok', 'ng', 'ok']);
+  assert.equal(r.best, 3); assert.equal(r.streak, 1); assert.equal(r.stars, 1);
+  r = applyStreak(r, ['ok', 'hint', 'ok', 'ok', 'ok']);
+  assert.equal(r.streak, 5); assert.equal(r.best, 5); assert.equal(r.stars, 2); assert.equal(r.plays, 2);
+  assert.deepEqual([2, 3, 4, 5, 7, 8].map(starsOf), [0, 1, 1, 2, 2, 3]);
+});

@@ -11,6 +11,7 @@ function migrateFamily(d) {
 function migratePerson(d) {
   const out = { ...defaultPerson(), ...(d || {}), version: DATA_VERSION };
   if (!out.lessons || typeof out.lessons !== 'object') out.lessons = {};
+  if (!out.drills || typeof out.drills !== 'object') out.drills = {}; // 第3段階で追加
   return out;
 }
 

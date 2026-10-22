@@ -69,3 +69,13 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .lesson .lk { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-right: 12px; background: #f7e3b0; border-radius: 6px; font-size: 28px; }
 .lesson .lt { flex: 1; text-align: left; }
 .lessons { max-height: 55vh; overflow-y: auto; }
+
+/* ドリル */
+.cell.mark::after { content: ''; position: absolute; inset: 14%; border: 4px solid rgba(40, 110, 230, .9); border-radius: 50%; }
+.cell.ans::after { content: ''; width: 38%; height: 38%; border-radius: 50%; background: rgba(30, 160, 80, .9); position: absolute; box-shadow: 0 0 0 3px rgba(255,255,255,.7); }
+.cell.ans-ring::after { content: ''; position: absolute; inset: 6%; border: 5px solid rgba(30, 160, 80, .95); border-radius: 8px; }
+.cell.bad { background: rgba(220, 60, 50, .55); }
+.piece.dim0 { opacity: 1; }
+.lesson .lk.drill { background: transparent; font-size: 32px; }
+.lesson .sub { font-size: 14px; opacity: .65; margin-right: 10px; }
+.sign.on { outline: 4px solid var(--accent); }
