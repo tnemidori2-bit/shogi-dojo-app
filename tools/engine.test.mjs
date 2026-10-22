@@ -174,5 +174,15 @@ for (const id of openingIds) {
     if (id === 'bougin') assert.deepEqual(labels.slice(0, 3), ['▲7六歩', '△3四歩', '▲2六歩']);
     if (id === 'bougin') assert.equal(labels.at(-1), '▲同飛'); // 最後は、飛が2四の角を取る
     if (id === 'kihon') assert.equal(labels[6], '▲7八金');
+    if (id === 'shikenbisha') { assert.equal(labels[4], '▲6八飛'); assert.equal(labels.at(-1), '▲5八金'); }
+    if (id === 'hayakurigin') { assert.equal(labels[10], '▲4六銀'); assert.equal(labels[14], '▲同銀'); }
   });
 }
+
+// 公開済みの問題は、番号（id）と中身が変わらないこと。記録（解いた印・ベストタイム）が、別の問題に入れ替わるのを防ぐ
+import { createHash } from 'node:crypto';
+test('つめしょうぎ: 公開済みの問題（1手詰め1〜30・3手詰め1〜20）は、そのまま', () => {
+  const fp = (id, n) => createHash('sha256').update(JSON.stringify(JSON.parse(readFileSync(new URL(`${id}.json`, tsumeDir))).problems.slice(0, n))).digest('hex').slice(0, 16);
+  assert.equal(fp('mate1', 30), '8d882450cd217982');
+  assert.equal(fp('mate3', 20), '1c2e1b663b176cba');
+});

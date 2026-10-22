@@ -1,0 +1,1621 @@
+{
+ "id": "mate5",
+ "title": "5手詰め",
+ "moves": 5,
+ "starAt": [
+  3,
+  8,
+  20
+ ],
+ "unlock": {
+  "set": "mate3",
+  "solved": 10
+ },
+ "rounds": 1,
+ "problems": [
+  {
+   "id": "mate5-01",
+   "no": 1,
+   "board": [
+    ". . . . . . . . k",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . B .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kei": 1,
+     "kin": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      7,
+      3
+     ],
+     "to": [
+      6,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      8,
+      0
+     ],
+     "to": [
+      8,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      7,
+      1
+     ],
+     "drop": "kin",
+     "promote": false
+    },
+    {
+     "from": [
+      8,
+      1
+     ],
+     "to": [
+      8,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      2
+     ],
+     "to": [
+      7,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-02",
+   "no": 2,
+   "board": [
+    ". . . . . . l . R",
+    ". . . . . . . k .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . R . . . . . R",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {},
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      8,
+      5
+     ],
+     "to": [
+      8,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      7,
+      1
+     ],
+     "to": [
+      6,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      8,
+      0
+     ],
+     "to": [
+      8,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      1
+     ],
+     "to": [
+      7,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      8,
+      1
+     ],
+     "to": [
+      7,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-03",
+   "no": 3,
+   "board": [
+    ". . . . . . . S k",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . R . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "gin": 1,
+     "kyo": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": null,
+     "to": [
+      8,
+      1
+     ],
+     "drop": "gin",
+     "promote": false
+    },
+    {
+     "from": [
+      8,
+      0
+     ],
+     "to": [
+      7,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      5
+     ],
+     "to": [
+      6,
+      1
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      7,
+      1
+     ],
+     "to": [
+      8,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      1
+     ],
+     "to": [
+      7,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-04",
+   "no": 4,
+   "board": [
+    ". k . . . . . . .",
+    ". . . . G . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    "R . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "hi": 1,
+     "kei": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": null,
+     "to": [
+      1,
+      2
+     ],
+     "drop": "hi",
+     "promote": false
+    },
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      2,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      0,
+      5
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      2,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      0,
+      1
+     ],
+     "to": [
+      1,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-05",
+   "no": 5,
+   "board": [
+    ". . k . . . . . .",
+    ". . . . . . . . .",
+    "n . . . . . R . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . R . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kei": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      6,
+      2
+     ],
+     "to": [
+      2,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      1,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      5
+     ],
+     "to": [
+      3,
+      1
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      1,
+      1
+     ],
+     "to": [
+      1,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      2,
+      2
+     ],
+     "to": [
+      2,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-06",
+   "no": 6,
+   "board": [
+    ". . G . . . k . .",
+    ". . . . . . . . .",
+    ". . . . . g . G l",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "hi": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": null,
+     "to": [
+      3,
+      0
+     ],
+     "drop": "hi",
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      0
+     ],
+     "to": [
+      5,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      0
+     ],
+     "to": [
+      3,
+      1
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      5,
+      1
+     ],
+     "to": [
+      6,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      1
+     ],
+     "to": [
+      4,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-07",
+   "no": 7,
+   "board": [
+    ". . . . . R . . .",
+    ". . . . . . . . k",
+    ". B . . . . . . .",
+    ". . B . . . . l .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "fu": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      2,
+      3
+     ],
+     "to": [
+      4,
+      5
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      8,
+      1
+     ],
+     "to": [
+      7,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      5,
+      0
+     ],
+     "to": [
+      5,
+      1
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      7,
+      1
+     ],
+     "to": [
+      8,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      5,
+      1
+     ],
+     "to": [
+      8,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-08",
+   "no": 8,
+   "board": [
+    ". . . . . . . . .",
+    ". . . . k B . . .",
+    ". . . . . . . . .",
+    ". . . . . G P . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kaku": 1,
+     "gin": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      5,
+      1
+     ],
+     "to": [
+      4,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      4,
+      1
+     ],
+     "to": [
+      5,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      7,
+      2
+     ],
+     "drop": "kaku",
+     "promote": false
+    },
+    {
+     "from": [
+      5,
+      0
+     ],
+     "to": [
+      4,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      3,
+      1
+     ],
+     "drop": "gin",
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-09",
+   "no": 9,
+   "board": [
+    ". . s . . . . . .",
+    ". . g . k . . . .",
+    ". . . R . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "hi": 2
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": null,
+     "to": [
+      4,
+      2
+     ],
+     "drop": "hi",
+     "promote": false
+    },
+    {
+     "from": [
+      4,
+      1
+     ],
+     "to": [
+      5,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      4,
+      1
+     ],
+     "drop": "hi",
+     "promote": false
+    },
+    {
+     "from": [
+      5,
+      1
+     ],
+     "to": [
+      6,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      2
+     ],
+     "to": [
+      3,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-10",
+   "no": 10,
+   "board": [
+    "B . . . . . . . g",
+    ". . . . . . . k .",
+    ". R . . . . . . .",
+    ". . . . . . . S .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kaku": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      1,
+      2
+     ],
+     "to": [
+      6,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      7,
+      1
+     ],
+     "to": [
+      7,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      6,
+      1
+     ],
+     "drop": "kaku",
+     "promote": false
+    },
+    {
+     "from": [
+      7,
+      0
+     ],
+     "to": [
+      8,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      2
+     ],
+     "to": [
+      7,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-11",
+   "no": 11,
+   "board": [
+    ". . . . . . . k .",
+    ". . R . . . . . .",
+    ". . . . . . p . .",
+    ". . . . . . G . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "gin": 1,
+     "fu": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": null,
+     "to": [
+      6,
+      1
+     ],
+     "drop": "gin",
+     "promote": false
+    },
+    {
+     "from": [
+      7,
+      0
+     ],
+     "to": [
+      8,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      1
+     ],
+     "to": [
+      7,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      8,
+      1
+     ],
+     "to": [
+      8,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      2,
+      1
+     ],
+     "to": [
+      7,
+      1
+     ],
+     "drop": null,
+     "promote": true
+    }
+   ]
+  },
+  {
+   "id": "mate5-12",
+   "no": 12,
+   "board": [
+    "k . . . . . . . .",
+    ". . . B . G . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". S . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kin": 1,
+     "kaku": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      3,
+      1
+     ],
+     "to": [
+      2,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      0,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      1,
+      0
+     ],
+     "drop": "kaku",
+     "promote": false
+    },
+    {
+     "from": [
+      0,
+      1
+     ],
+     "to": [
+      1,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      1,
+      3
+     ],
+     "drop": "kin",
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-13",
+   "no": 13,
+   "board": [
+    ". k . . B . . . .",
+    ". . . . . . . . .",
+    ". . . g . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . B . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "hi": 1,
+     "kei": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      6,
+      5
+     ],
+     "to": [
+      3,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      1,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      2,
+      1
+     ],
+     "drop": "hi",
+     "promote": false
+    },
+    {
+     "from": [
+      1,
+      1
+     ],
+     "to": [
+      1,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      1,
+      3
+     ],
+     "drop": "kin",
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-14",
+   "no": 14,
+   "board": [
+    ". . . . B G . . .",
+    ". . . . . . k S .",
+    ". . . . . . . . .",
+    ". . . . . . . p .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kyo": 2
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      7,
+      1
+     ],
+     "to": [
+      6,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      6,
+      1
+     ],
+     "to": [
+      7,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      7,
+      1
+     ],
+     "drop": "kyo",
+     "promote": false
+    },
+    {
+     "from": [
+      7,
+      0
+     ],
+     "to": [
+      8,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      8,
+      3
+     ],
+     "drop": "kyo",
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-15",
+   "no": 15,
+   "board": [
+    ". . . k . . . . .",
+    ". . . . . . . . .",
+    ". l s . . . . . R",
+    ". . . . . . . . .",
+    ". R . . . L . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "hi": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      8,
+      2
+     ],
+     "to": [
+      3,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      3,
+      0
+     ],
+     "to": [
+      2,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      2,
+      1
+     ],
+     "drop": "hi",
+     "promote": false
+    },
+    {
+     "from": [
+      2,
+      0
+     ],
+     "to": [
+      1,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      2
+     ],
+     "to": [
+      3,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-16",
+   "no": 16,
+   "board": [
+    "k . . . . B . . B",
+    ". n . . . . . . .",
+    ". . . R . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kaku": 1,
+     "gin": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      3,
+      2
+     ],
+     "to": [
+      0,
+      2
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      0,
+      0
+     ],
+     "to": [
+      1,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      5,
+      0
+     ],
+     "to": [
+      3,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      1,
+      0
+     ],
+     "to": [
+      2,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      0,
+      2
+     ],
+     "to": [
+      0,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-17",
+   "no": 17,
+   "board": [
+    ". . . . . . . k .",
+    ". . . . . B . . .",
+    ". . . . . . . p .",
+    ". . . R . P . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kin": 1,
+     "kyo": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      3,
+      3
+     ],
+     "to": [
+      3,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      7,
+      0
+     ],
+     "to": [
+      8,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      8,
+      3
+     ],
+     "drop": "kyo",
+     "promote": false
+    },
+    {
+     "from": [
+      8,
+      1
+     ],
+     "to": [
+      7,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      0
+     ],
+     "to": [
+      6,
+      0
+     ],
+     "drop": null,
+     "promote": true
+    }
+   ]
+  },
+  {
+   "id": "mate5-18",
+   "no": 18,
+   "board": [
+    ". . . k s s . . .",
+    ". . . . . . . . .",
+    ". . . n . R . . .",
+    ". . . . . . . . .",
+    "S . . . . . . R .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kin": 1,
+     "fu": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": [
+      5,
+      2
+     ],
+     "to": [
+      3,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      4,
+      0
+     ],
+     "to": [
+      3,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      2,
+      1
+     ],
+     "drop": "kin",
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      0
+     ],
+     "to": [
+      4,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      2
+     ],
+     "to": [
+      3,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-19",
+   "no": 19,
+   "board": [
+    ". . . . n . . n .",
+    ". . . S . . k . .",
+    ". R . . p . . . .",
+    ". . . . . . . G .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "kin": 1,
+     "gin": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": null,
+     "to": [
+      7,
+      2
+     ],
+     "drop": "kin",
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      1
+     ],
+     "to": [
+      5,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      3,
+      1
+     ],
+     "to": [
+      4,
+      2
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      5,
+      1
+     ],
+     "to": [
+      6,
+      0
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": null,
+     "to": [
+      5,
+      1
+     ],
+     "drop": "gin",
+     "promote": false
+    }
+   ]
+  },
+  {
+   "id": "mate5-20",
+   "no": 20,
+   "board": [
+    ". . . . . . s . .",
+    ". . . . . p . k .",
+    ". . . . . . R . p",
+    ". . S . . . . . .",
+    ". . . . . . P . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . .",
+    ". . . . . . . . ."
+   ],
+   "hands": {
+    "sente": {
+     "hi": 1,
+     "kin": 1
+    },
+    "gote": {}
+   },
+   "solution": [
+    {
+     "from": null,
+     "to": [
+      7,
+      2
+     ],
+     "drop": "hi",
+     "promote": false
+    },
+    {
+     "from": [
+      7,
+      1
+     ],
+     "to": [
+      8,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      2
+     ],
+     "to": [
+      6,
+      1
+     ],
+     "drop": null,
+     "promote": true
+    },
+    {
+     "from": [
+      6,
+      0
+     ],
+     "to": [
+      7,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    },
+    {
+     "from": [
+      6,
+      1
+     ],
+     "to": [
+      7,
+      1
+     ],
+     "drop": null,
+     "promote": false
+    }
+   ]
+  }
+ ]
+}

@@ -74,9 +74,9 @@ function principalVariation(board, hands, k) {
   return line;
 }
 
-function make({ attackerMoves, count, seed, maxSolutions, label }) {
+function make({ attackerMoves, count, seed, maxSolutions, label, seenInit }) {
   const rng = seeded(seed);
-  const found = [], seen = new Set();
+  const found = [], seen = new Set(seenInit || []);
   let tries = 0;
   const t0 = Date.now();
   while (found.length < count && tries < 3000000 && Date.now() - t0 < 20 * 60 * 1000) {
@@ -84,7 +84,7 @@ function make({ attackerMoves, count, seed, maxSolutions, label }) {
     const p = randomPosition(rng);
     if (!p) continue;
     const { board, hands } = p;
-    const key = JSON.stringify(toRows(board)) + JSON.stringify(hands);
+    const key = JSON.stringify(toRows(board)) + JSON.stringify({ sente: hands[0], gote: hands[1] });
     if (seen.has(key)) continue;
     // 手数がちょうど N：それより短くは詰まない
     let ok = true;
@@ -101,18 +101,41 @@ function make({ attackerMoves, count, seed, maxSolutions, label }) {
   return found;
 }
 
+// ---- 使い方 ----
+//   node tools/make-tsume.mjs <set> --add N     既存の問題はそのまま、後ろに N 問を足す（記録の番号がずれない）
+//   node tools/make-tsume.mjs <set> --force     最初から作り直す（既存の記録の番号と合わなくなるので、普段は使わない）
+// set は mate1・mate3・mate5。ファイルが無いときは、最初の問題集を作る。
 mkdirSync(new URL('../public/data/tsume/', import.meta.url), { recursive: true });
-const sets = [
-  { id: 'mate1', title: '1手詰め', moves: 1, attackerMoves: 1, count: 30, seed: 20261022, maxSolutions: 2, starAt: [5, 15, 30] },
-  { id: 'mate3', title: '3手詰め', moves: 3, attackerMoves: 2, count: 20, seed: 20261023, maxSolutions: 2, starAt: [3, 8, 20], unlock: { set: 'mate1', solved: 10 } },
-];
-const only = process.argv[2];
-for (const s of sets) {
-  if (only && only !== s.id) continue;
-  const list = make({ ...s, label: s.id });
-  const out = {
-    id: s.id, title: s.title, moves: s.moves, starAt: s.starAt, ...(s.unlock ? { unlock: s.unlock } : {}),
-    problems: list.map((p, i) => ({ id: `${s.id}-${String(i + 1).padStart(2, '0')}`, no: i + 1, board: p.board, hands: p.hands, solution: p.solution })),
-  };
-  writeFileSync(new URL(`../public/data/tsume/${s.id}.json`, import.meta.url), JSON.stringify(out, null, 1) + '\n');
-}
+const sets = {
+  mate1: { id: 'mate1', title: '1手詰め', moves: 1, attackerMoves: 1, count: 30, seed: 20261022, maxSolutions: 2, starAt: [5, 15, 30] },
+  mate3: { id: 'mate3', title: '3手詰め', moves: 3, attackerMoves: 2, count: 20, seed: 20261023, maxSolutions: 2, starAt: [3, 8, 20], unlock: { set: 'mate1', solved: 10 } },
+  mate5: { id: 'mate5', title: '5手詰め', moves: 5, attackerMoves: 3, count: 20, seed: 20261024, maxSolutions: 2, starAt: [3, 8, 20], unlock: { set: 'mate3', solved: 10 } },
+};
+const rowsKey = (rows, hands) => JSON.stringify(rows) + JSON.stringify(hands);
+const [setId, ...flags] = process.argv.slice(2);
+const def = sets[setId];
+if (!def) { console.error('set を mate1 / mate3 / mate5 から選んでください'); process.exit(1); }
+const file = new URL(`../public/data/tsume/${def.id}.json`, import.meta.url);
+let existing = null;
+try { existing = JSON.parse(readFileSync(file, 'utf8')); } catch { /* まだ無い */ }
+const force = flags.includes('--force');
+const addIdx = flags.indexOf('--add');
+const add = addIdx >= 0 ? Number(flags[addIdx + 1]) : null;
+if (existing && !force && add == null) { console.error(`${def.id}.json はもうあります。後ろに足すなら --add N、作り直すなら --force`); process.exit(1); }
+
+const base = existing && !force ? existing : null;
+const rounds = base ? (base.rounds || 1) : 0;
+const count = base ? add : def.count;
+const seen = new Set(base ? base.problems.map((p) => rowsKey(p.board, p.hands)) : []);
+const list = make({ ...def, count, seed: def.seed + 1000 * rounds, label: def.id, seenInit: seen });
+const startNo = base ? base.problems.length : 0;
+const out = {
+  id: def.id, title: def.title, moves: def.moves, starAt: def.starAt, ...(def.unlock ? { unlock: def.unlock } : {}),
+  rounds: rounds + 1,
+  problems: [
+    ...(base ? base.problems : []),
+    ...list.map((p, i) => ({ id: `${def.id}-${String(startNo + i + 1).padStart(2, '0')}`, no: startNo + i + 1, board: p.board, hands: p.hands, solution: p.solution })),
+  ],
+};
+writeFileSync(file, JSON.stringify(out, null, 1) + '\n');
+console.error(`${def.id}: 合計 ${out.problems.length} 問`);
