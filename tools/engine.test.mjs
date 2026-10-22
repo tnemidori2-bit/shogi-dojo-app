@@ -136,3 +136,43 @@ test('つめしょうぎ: 受けの返事は、できるだけ長く粘る手', 
     assert.ok(winsIn(q.board, q.hands, 1, pieces), p.id + ': 返事のあとに1手で詰む');
   }
 });
+
+// ---- 戦法（せんぽう）の手順 ----
+import { initialBoard } from '../src/shogi/rules.js';
+import { parseUsi, toUsi, moveLabel, findLegal } from '../src/shogi/usi.js';
+const openingDir = new URL('../public/data/openings/', import.meta.url);
+const openingIds = JSON.parse(readFileSync(new URL('index.json', openingDir))).openings;
+
+test('USI: 読み書きが元に戻る', () => {
+  for (const u of ['7g7f', '2h2d', '3c3d', 'P*5e', 'G*4b', '2b8h+']) assert.equal(toUsi(parseUsi(u)), u);
+  assert.deepEqual(parseUsi('7g7f'), { from: { x: 2, y: 6 }, to: { x: 2, y: 5 }, drop: null, promote: false });
+});
+
+for (const id of openingIds) {
+  test(`戦法 ${id}: 手順が全部合法手で、先手の手から始まり、説明がある`, () => {
+    const o = JSON.parse(readFileSync(new URL(`${id}.json`, openingDir)));
+    assert.ok(o.moves.length >= 2);
+    let board = initialBoard();
+    let hands = [{}, {}];
+    let prev = null;
+    const labels = [];
+    o.moves.forEach((mv, i) => {
+      assert.ok(mv.text && mv.text.length > 5, `${id} ${i + 1}手目に説明がない`);
+      const side = i % 2;
+      const m = parseUsi(mv.usi);
+      const legal = findLegal(board, hands, side, pieces, m);
+      assert.ok(legal, `${id}: ${i + 1}手目 ${mv.usi} は合法手でない`);
+      const piece = m.from ? board[m.from.y][m.from.x] : null;
+      assert.ok(m.drop || (piece && piece.s === side), `${id}: ${i + 1}手目は、その手番の駒でない`);
+      labels.push(moveLabel(m, board, side, pieces, prev));
+      const r = applyFull(board, hands, m, side);
+      board = r.board; hands = r.hands; prev = m.to;
+      // 自分の玉が王手のまま、は legalMoves が外している。相手の玉を取ってしまう手もない
+      assert.ok(findKing(board, 0) && findKing(board, 1));
+    });
+    assert.ok(o.finish);
+    if (id === 'bougin') assert.deepEqual(labels.slice(0, 3), ['▲7六歩', '△3四歩', '▲2六歩']);
+    if (id === 'bougin') assert.equal(labels.at(-1), '▲同飛'); // 最後は、飛が2四の角を取る
+    if (id === 'kihon') assert.equal(labels[6], '▲7八金');
+  });
+}

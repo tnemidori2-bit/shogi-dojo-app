@@ -15,6 +15,7 @@ function migratePerson(d) {
   if (!out.lessons || typeof out.lessons !== 'object') out.lessons = {};
   if (!out.drills || typeof out.drills !== 'object') out.drills = {}; // 第3段階で追加
   if (!out.tsume || typeof out.tsume !== 'object') out.tsume = {}; // 第4段階で追加
+  if (!out.openings || typeof out.openings !== 'object') out.openings = {}; // 第5段階で追加
   return out;
 }
 

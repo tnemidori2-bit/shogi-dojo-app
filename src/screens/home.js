@@ -1,7 +1,7 @@
 import { T } from '../text.js';
 import { state, currentProfile, animalOf } from '../core/store.js';
 import { loadJson, loadPieces } from '../core/data.js';
-import { totalStars, kyuOf, tsumeSolved, tsumeStars } from '../core/rank.js';
+import { totalStars, kyuOf, tsumeSolved, tsumeStars, openingStars } from '../core/rank.js';
 import { sfx } from '../core/audio.js';
 import { toast } from '../ui.js';
 import { escapeHtml } from './profile.js';
@@ -10,7 +10,7 @@ const SIGNS = [
   { key: 'lesson', label: T.signLesson, emoji: '📖', ready: true },
   { key: 'drill', label: T.signDrill, emoji: '✏️', ready: true },
   { key: 'tsume', label: T.signTsume, emoji: '👑', ready: true },
-  { key: 'senpou', label: T.signSenpou, emoji: '🗡️' },
+  { key: 'senpou', label: T.signSenpou, emoji: '🗡️', ready: true },
   { key: 'match', label: T.signMatch, emoji: '⚔️' },
 ];
 
@@ -21,17 +21,18 @@ export async function mountHome(root, nav) {
   el.className = 'screen home';
   const prof = currentProfile();
   const a = animalOf(prof?.icon);
-  let lessons = [], drills = [], tsumeSets = [], pieces = {}, kyu = [{ kyu: 10, stars: 0 }];
+  let lessons = [], drills = [], tsumeSets = [], openings = [], pieces = {}, kyu = [{ kyu: 10, stars: 0 }];
   try {
     const idx = await loadJson('lessons/index.json');
     lessons = await Promise.all(idx.lessons.map((id) => loadJson(`lessons/${id}.json`)));
     const didx = await loadJson('drills/index.json');
     drills = await Promise.all(didx.drills.map((id) => loadJson(`drills/${id}.json`)));
     tsumeSets = await Promise.all((await loadJson('tsume/index.json')).sets.map((id) => loadJson(`tsume/${id}.json`)));
+    openings = await Promise.all((await loadJson('openings/index.json')).openings.map((id) => loadJson(`openings/${id}.json`)));
     pieces = await loadPieces();
     kyu = (await loadJson('levels.json')).kyu;
   } catch (e) { console.warn(e); toast(T.loadFailed); }
-  const stars_ = totalStars(state.person, lessons.map((l) => l.id), drills.map((d) => d.id), tsumeSets);
+  const stars_ = totalStars(state.person, lessons.map((l) => l.id), drills.map((d) => d.id), tsumeSets, openings.map((o) => o.id));
 
   const lessonRows = lessons.map((l) => {
     const rec = state.person?.lessons?.[l.id];
@@ -41,6 +42,7 @@ export async function mountHome(root, nav) {
     const rec = state.person?.drills?.[d.id];
     return `<button class="lesson" type="button" data-drill="${d.id}"><span class="lk drill">${d.icon}</span><span class="lt">${escapeHtml(d.title)}</span><span class="sub">${T.drillRow(rec?.streak || 0)}</span><span class="stars">${stars(rec?.stars || 0)}</span></button>`;
   }).join('');
+  const openingHtml = openings.map((o) => `<div class="tsume-set"><div class="tsume-head"><span class="lt">${escapeHtml(o.title)}</span><span class="stars">${stars(openingStars(state.person, o.id))}</span></div><p class="note">${escapeHtml(o.summary)}</p><div class="actions"><button class="btn" type="button" data-op="${o.id}" data-mode="learn">${T.learn}</button><button class="btn big" type="button" data-op="${o.id}" data-mode="try">${T.try_}</button></div></div>`).join('') + `<p class="note">${T.openingStars}</p>`;
   const tsumeHtml = tsumeSets.map((set) => {
     const solved = tsumeSolved(state.person, set);
     const need = set.unlock ? set.unlock.solved : 0;
@@ -52,21 +54,23 @@ export async function mountHome(root, nav) {
     return `<div class="tsume-set">${head}<div class="nums">${nums}</div></div>`;
   }).join('');
   el.innerHTML = `
-    <div class="topbar"><span>${a.emoji} ${escapeHtml(prof?.name || a.label)}</span><span>${T.rank(kyuOf(stars_, kyu))}　${T.totalStars(stars_, (lessons.length + drills.length + tsumeSets.length) * 3)}</span><span>${T.level(state.family.level)}</span>
+    <div class="topbar"><span>${a.emoji} ${escapeHtml(prof?.name || a.label)}</span><span>${T.rank(kyuOf(stars_, kyu))}　${T.totalStars(stars_, (lessons.length + drills.length + tsumeSets.length + openings.length) * 3)}</span><span>${T.level(state.family.level)}</span>
       <button class="btn small" type="button" id="switch">${T.next}</button></div>
     <div class="title">${T.homeTitle}</div>
     <div class="signs">${SIGNS.map((s) => `<button class="sign ${s.ready ? '' : 'off'}" type="button" data-sign="${s.key}"><span class="emoji">${s.emoji}</span>${s.label}</button>`).join('')}</div>
     <div class="lessons" id="lessons">${lessonRows}</div>
     <div class="lessons hidden" id="drills">${drillRows}</div>
-    <div class="lessons hidden" id="tsume">${tsumeHtml}</div>`;
-  const panels = { lesson: el.querySelector('#lessons'), drill: el.querySelector('#drills'), tsume: el.querySelector('#tsume') };
+    <div class="lessons hidden" id="tsume">${tsumeHtml}</div>
+    <div class="lessons hidden" id="senpou">${openingHtml}</div>`;
+  const panels = { lesson: el.querySelector('#lessons'), drill: el.querySelector('#drills'), tsume: el.querySelector('#tsume'), senpou: el.querySelector('#senpou') };
   const signBtns = [...el.querySelectorAll('[data-sign]')];
   const open = (key) => { for (const k in panels) panels[k].classList.toggle('hidden', k !== key); signBtns.forEach((x) => x.classList.toggle('on', x.dataset.sign === key)); };
-  open(['drill', 'tsume'].includes(sessionStorage.getItem('homeTab')) ? sessionStorage.getItem('homeTab') : 'lesson');
+  open(['drill', 'tsume', 'senpou'].includes(sessionStorage.getItem('homeTab')) ? sessionStorage.getItem('homeTab') : 'lesson');
   signBtns.forEach((b) => b.addEventListener('click', () => {
     const k = b.dataset.sign;
     if (panels[k]) { sfx('tap'); try { sessionStorage.setItem('homeTab', k); } catch {} open(k); } else { sfx('no'); toast(T.comingSoon); }
   }));
+  el.querySelectorAll('[data-op]').forEach((b) => b.addEventListener('click', () => { sfx('ok'); nav.opening(b.dataset.op, b.dataset.mode); }));
   el.querySelectorAll('[data-problem]').forEach((b) => b.addEventListener('click', () => { sfx('ok'); nav.tsume(b.dataset.tsume, b.dataset.problem); }));
   el.querySelectorAll('[data-drill]').forEach((b) => b.addEventListener('click', () => { sfx('ok'); nav.drill(b.dataset.drill); }));
   el.querySelectorAll('[data-lesson]').forEach((b) => b.addEventListener('click', () => { sfx('ok'); nav.lesson(b.dataset.lesson); }));

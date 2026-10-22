@@ -15,9 +15,15 @@ test('平手: 先手の歩は1ます前だけ', () => {
 test('平手: 後手の歩は下へ進む', () => {
   assert.deepEqual(at(movesFor(initialBoard(), 4, 2, pieces)), ['4,3']);
 });
+test('平手: 飛は先手が2八（右）・角は8八（左）、後手は飛が8二・角が2二', () => {
+  const b = initialBoard();
+  assert.deepEqual([b[7][1].t, b[7][7].t], ['kaku', 'hi']);
+  assert.deepEqual([b[1][1].t, b[1][7].t], ['hi', 'kaku']);
+  assert.ok(b[7].every((c) => !c || c.s === 0) && b[1].every((c) => !c || c.s === 1));
+});
 test('平手: 先手の角は最初は動けない、飛は横にだけ動ける', () => {
-  assert.deepEqual(movesFor(initialBoard(), 7, 7, pieces), []);
-  assert.deepEqual(at(movesFor(initialBoard(), 1, 7, pieces)), ['0,7', '2,7', '3,7', '4,7', '5,7', '6,7']);
+  assert.deepEqual(movesFor(initialBoard(), 1, 7, pieces), []);
+  assert.deepEqual(at(movesFor(initialBoard(), 7, 7, pieces)), ['2,7', '3,7', '4,7', '5,7', '6,7', '8,7']);
 });
 test('平手: 先手の銀・金・桂の初手', () => {
   const b = initialBoard();
@@ -25,18 +31,18 @@ test('平手: 先手の銀・金・桂の初手', () => {
   assert.deepEqual(at(movesFor(b, 3, 8, pieces)), ['2,7', '3,7', '4,7']); // 金
   assert.deepEqual(movesFor(b, 1, 8, pieces), []); // 桂は前の2ますが自分の歩
 });
-test('歩を進めたあと角道が開く', () => {
-  const b = applyMove(initialBoard(), { x: 6, y: 6 }, { x: 6, y: 5 });
-  const m = at(movesFor(b, 7, 7, pieces));
-  assert.ok(m.includes('6,6') && m.includes('2,2')); // 敵の歩まで届いて取れる
-  assert.ok(!m.includes('1,1'));
+test('7六歩のあと角道が開き、敵の歩まで届いて取れる', () => {
+  const b = applyMove(initialBoard(), { x: 2, y: 6 }, { x: 2, y: 5 });
+  const m = at(movesFor(b, 1, 7, pieces));
+  assert.ok(m.includes('2,6') && m.includes('6,2')); // 6二でなく、敵の歩（3三）まで
+  assert.ok(!m.includes('7,1'));
 });
 test('飛は敵の駒までで止まり、取れる', () => {
   const b = initialBoard();
-  b[6][1] = null; // 縦の歩をどける
-  const m = at(movesFor(b, 1, 7, pieces));
-  assert.ok(m.includes('1,2')); // 敵の歩を取れる
-  assert.ok(!m.includes('1,1')); // その先へは行けない
+  b[6][7] = null; // 2筋の歩をどける
+  const m = at(movesFor(b, 7, 7, pieces));
+  assert.ok(m.includes('7,2')); // 敵の歩を取れる
+  assert.ok(!m.includes('7,1')); // その先（敵の角）へは行けない
 });
 
 const lessonDir = new URL('../public/data/lessons/', import.meta.url);

@@ -14,12 +14,14 @@ export function mountResult(root, nav, info) {
     ${info.kyuUp ? `<p class="levelup">${T.rankUp(info.kyu)}</p>` : `<p>${T.rank(info.kyu)}</p>`}
     <p>${T.turnCount(state.family.turns)}</p>
     <div class="actions wrap"><button class="btn" type="button" id="again">${T.again}</button>
+    ${info.kind === 'opening' ? `<button class="btn big" type="button" id="other">${info.mode === 'learn' ? T.try_ : T.learn}</button><button class="btn" type="button" id="home">${T.toHome}</button>` : ''}
     ${info.kind === 'tsume' ? `<button class="btn big" type="button" id="nextq">${T.nextProblem}</button><button class="btn" type="button" id="home">${T.toHome}</button>` : ''}
-    <button class="btn ${info.kind === 'tsume' ? '' : 'big'}" type="button" id="next">${T.next}</button></div>`;
+    <button class="btn ${info.kind === 'tsume' || info.kind === 'opening' ? '' : 'big'}" type="button" id="next">${T.next}</button></div>`;
   el.querySelector('#again').addEventListener('click', () => {
     sfx('tap');
-    if (info.kind === 'tsume') nav.tsume(info.setId, info.id); else (info.kind === 'drill' ? nav.drill : nav.lesson)(info.id);
+    if (info.kind === 'opening') nav.opening(info.id, info.mode); else if (info.kind === 'tsume') nav.tsume(info.setId, info.id); else (info.kind === 'drill' ? nav.drill : nav.lesson)(info.id);
   });
+  el.querySelector('#other')?.addEventListener('click', () => { sfx('tap'); nav.opening(info.id, info.mode === 'learn' ? 'try' : 'learn'); });
   el.querySelector('#nextq')?.addEventListener('click', () => { sfx('tap'); nav.tsume(info.setId, info.nextId); });
   el.querySelector('#home')?.addEventListener('click', () => { sfx('tap'); nav.home(); });
   el.querySelector('#next').addEventListener('click', () => { sfx('tap'); nav.profile(); });

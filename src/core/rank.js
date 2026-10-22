@@ -9,11 +9,18 @@ export function tsumeStars(person, set) {
   return set.starAt.filter((a) => n >= a).length;
 }
 
-export function totalStars(person, lessonIds, drillIds = [], tsumeSets = []) {
+// 戦法の★：まなぶ=1、ためすクリア=2、ためすを まちがいなし（ヒントなし）で=3
+export function openingStars(person, id) {
+  const r = person?.openings?.[id];
+  return r ? (r.learned ? 1 : 0) + (r.clears > 0 ? 1 : 0) + (r.perfect ? 1 : 0) : 0;
+}
+
+export function totalStars(person, lessonIds, drillIds = [], tsumeSets = [], openingIds = []) {
   const l = lessonIds.reduce((sum, id) => sum + (person?.lessons?.[id]?.stars || 0), 0);
   const d = drillIds.reduce((sum, id) => sum + (person?.drills?.[id]?.stars || 0), 0);
   const t = tsumeSets.reduce((sum, set) => sum + tsumeStars(person, set), 0);
-  return l + d + t;
+  const o = openingIds.reduce((sum, id) => sum + openingStars(person, id), 0);
+  return l + d + t + o;
 }
 
 export function kyuOf(stars, kyuTable) {

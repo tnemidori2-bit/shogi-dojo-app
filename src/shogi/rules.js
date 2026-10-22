@@ -3,15 +3,16 @@
 
 export const SIZE = 9;
 
+// 平手：先手の飛は2八・角は8八、後手の飛は8二・角は2二（上下を逆にした向き）
 const HIRATE = [
   'l n s g k g s n l',
-  '. b . . . . . r .',
+  '. r . . . . . b .',
   'p p p p p p p p p',
   '. . . . . . . . .',
   '. . . . . . . . .',
   '. . . . . . . . .',
   'P P P P P P P P P',
-  '. R . . . . . B .',
+  '. B . . . . . R .',
   'L N S G K G S N L',
 ];
 const CODE = { p: 'fu', l: 'kyo', n: 'kei', s: 'gin', g: 'kin', b: 'kaku', r: 'hi', k: 'gyoku' };

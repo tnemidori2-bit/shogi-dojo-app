@@ -21,13 +21,14 @@ export const defaultFamily = () => ({
   createdAt: Date.now(),
 });
 
-// 人ごとのデータ。lessons[id] = { clears, stars }、drills[id] = { streak, best, stars, plays, correct }
+// 人ごとのデータ。lessons[id] = { clears, stars }、drills[id] = { streak, best, stars, plays, correct }、openings[id] = { learned, clears, perfect, misses }
 export const defaultPerson = () => ({
   version: DATA_VERSION,
   difficulty: 'normal',
   lessons: {},
   drills: {},
   tsume: {}, // 問題id → { solves, best(ミリ秒), misses }
+  openings: {}, // 戦法id → { learned, clears, perfect, misses }
   plays: 0,
 });
 

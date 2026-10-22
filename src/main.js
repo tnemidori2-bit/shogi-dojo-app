@@ -2,7 +2,7 @@ import './style.css';
 import { state, currentProfile, animalOf } from './core/store.js';
 import { loadAll, switchTo, saveCurrent } from './core/storage.js';
 import { loadJson } from './core/data.js';
-import { totalStars, kyuOf, tsumeStars } from './core/rank.js';
+import { totalStars, kyuOf, tsumeStars, openingStars } from './core/rank.js';
 import { applyStreak } from './shogi/drills.js';
 import { T } from './text.js';
 import { mountStart } from './screens/start.js';
@@ -12,6 +12,7 @@ import { mountHome } from './screens/home.js';
 import { mountLesson } from './screens/lesson.js';
 import { mountDrill } from './screens/drill.js';
 import { mountTsume, fmtTime } from './screens/tsume.js';
+import { mountOpening } from './screens/opening.js';
 import { mountResult } from './screens/result.js';
 
 // 拡大を止める（iOS Safari）
@@ -29,17 +30,18 @@ async function allIds() {
   const lessons = (await loadJson('lessons/index.json')).lessons;
   const drills = (await loadJson('drills/index.json')).drills;
   const tsume = await Promise.all((await loadJson('tsume/index.json')).sets.map((id) => loadJson(`tsume/${id}.json`)));
-  return { lessons, drills, tsume };
+  const openings = (await loadJson('openings/index.json')).openings;
+  return { lessons, drills, tsume, openings };
 }
 
 // 1回遊び終えたときの共通の記録：経験値・家族のレベル・「番」・最後に遊んだ日・級
 async function finishSession(exp, applyStars) {
   const { levels, kyu } = await loadJson('levels.json');
   const ids = await allIds();
-  const kyuBefore = kyuOf(totalStars(state.person, ids.lessons, ids.drills, ids.tsume), kyu);
+  const kyuBefore = kyuOf(totalStars(state.person, ids.lessons, ids.drills, ids.tsume, ids.openings), kyu);
   applyStars();
   const gained = typeof exp === 'function' ? exp() : exp; // 記録を反映したあとで決まる経験値もある（つめしょうぎ）
-  const kyuAfter = kyuOf(totalStars(state.person, ids.lessons, ids.drills, ids.tsume), kyu);
+  const kyuAfter = kyuOf(totalStars(state.person, ids.lessons, ids.drills, ids.tsume, ids.openings), kyu);
   const before = state.family.level;
   state.person.plays++;
   state.family.exp += gained;
@@ -106,6 +108,29 @@ async function recordTsume(setId, problemId, res) {
   return { ...info, kind: 'tsume', setId, id: problemId, nextId: next.id, stars: tsumeStars(state.person, set), lines };
 }
 
+// 戦法：まなぶ（初回 +1）／ためす（初クリア +2、2回目以降 +1、初めて まちがいなし・ヒントなしで +1）
+async function recordOpening(id, mode, res) {
+  const rec = state.person.openings[id] || { learned: false, clears: 0, perfect: false, misses: 0 };
+  let exp = 0;
+  const lines = [];
+  const info = await finishSession(() => exp, () => {
+    if (mode === 'learn') {
+      if (!rec.learned) exp += 1;
+      rec.learned = true;
+      lines.push(T.learnedNote);
+    } else {
+      exp += rec.clears === 0 ? 2 : 1;
+      rec.clears++;
+      rec.misses += res.misses;
+      const clean = res.misses === 0 && !res.hinted;
+      if (clean && !rec.perfect) { exp += 1; rec.perfect = true; }
+      lines.push(clean ? T.noMistake : T.openingMissNote(res.misses, res.hinted));
+    }
+    state.person.openings[id] = rec;
+  });
+  return { ...info, kind: 'opening', id, mode, stars: openingStars(state.person, id), lines };
+}
+
 const nav = {
   start: () => show(mountStart),
   profile: async () => { await switchTo(null); await show(mountProfile); },
@@ -114,6 +139,8 @@ const nav = {
   home: () => show(mountHome),
   lesson: (id) => show(mountLesson, id),
   drill: (id) => show(mountDrill, id),
+  opening: (id, mode) => show(mountOpening, id, mode),
+  openingResult: async (id, mode, res) => show(mountResult, await recordOpening(id, mode, res)),
   tsume: (setId, problemId) => show(mountTsume, setId, problemId),
   tsumeResult: async (setId, problemId, res) => show(mountResult, await recordTsume(setId, problemId, res)),
   result: async (id) => show(mountResult, await recordLesson(id)),
