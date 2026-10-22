@@ -1,0 +1,9 @@
+{
+  "name": "将棋道場",
+  "short_name": "将棋道場",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#2f4a3a",
+  "theme_color": "#2f4a3a"
+}
