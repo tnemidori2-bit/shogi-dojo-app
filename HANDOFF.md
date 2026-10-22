@@ -21,6 +21,6 @@
 
 ## 気をつけること
 - 外部通信は自分の /data の fetch だけ。`grep -nE 'analytics|googleapis|<a '` で確認
-- package-lock.json を作り直したら、Cloudflare と同じ npm 10.9.2 で ci が通るか確認
+- package-lock.json を作り直すときは decisions.json の 2026-10-22-lockfile-by-npm-10 の手順で（npm 10.9.2・空フォルダ）
 - commit・push・Cloudflare の設定は満さんが行う。Claude は手順を案内する
 - 家族日記には手を入れない
