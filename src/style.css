@@ -107,3 +107,4 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .cell.last { background: rgba(224, 165, 38, .35); }
 .btn:disabled { opacity: .4; }
 .tsume-set .note { margin: 0; line-height: 1.5; }
+.legend { margin: 0; font-size: 14px; opacity: .75; text-align: center; }

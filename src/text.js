@@ -98,6 +98,7 @@ export const T = {
   openingLearned: (n) => `まなんだ ${n}`,
   learnedNote: 'まなんだ！ つぎは「ためす」で、じぶんで うごかして みよう',
   openingMissNote: (n, hinted) => `${n > 0 ? `まちがい ${n}かい` : ''}${n > 0 && hinted ? '・' : ''}${hinted ? 'ヒントを つかった' : ''}。★3は、まちがいなし・ヒントなし で ためすと もらえるよ`,
+  lastMoveLegend: 'いろの ついた 2つの ますは、さいごに うごいた 手の「まえ」と「あと」だよ',
   rank: (k) => `${k}きゅう`,
   rankUp: (k) => `${k}きゅうに あがった！`,
   totalStars: (n, max) => `ほし ${n} / ${max}`,

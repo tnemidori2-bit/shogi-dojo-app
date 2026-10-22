@@ -44,7 +44,8 @@ export async function mountOpening(root, nav, openingId, mode) {
     <div class="topbar"><button class="btn small" type="button" id="quit">${T.quit}</button><span>${op.title}　${mode === 'learn' ? T.learn : T.try_}</span><span id="count"></span></div>
     <div class="message" id="msg"></div>
     <div class="actions" id="actions"></div>
-    <div class="board" id="board"></div>`;
+    <div class="board" id="board"></div>
+    <p class="legend">${T.lastMoveLegend}</p>`;
   const boardEl = el.querySelector('#board');
 
   function draw() {
