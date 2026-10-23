@@ -33,7 +33,7 @@ export const defaultPerson = () => ({
   plays: 0,
 });
 
-export const defaultSettings = () => ({ version: DATA_VERSION, volume: 0.7, defaultDifficulty: 'normal' });
+export const defaultSettings = () => ({ version: DATA_VERSION, volume: 0.7, defaultDifficulty: 'normal', lastExport: null });
 
 export const state = {
   ready: false,

@@ -303,6 +303,30 @@
       "source": "Claude",
       "problem": "定石の中身は、機械では確かめられない",
       "decision": "手順と説明は public/data/openings/*.json。直すときは JSON の text を直すだけでよい。美濃囲い＝玉2八・銀3八・金4九と5八"
+    },
+    {
+      "id": "2026-10-23-stage7-confirmed",
+      "date": "2026-10-23",
+      "title": "第7段階は iPad で確認できた（満さんの確認 2026-10-23）",
+      "source": "満さんの確認",
+      "problem": "第7段階の確認",
+      "decision": "次にやることの候補から「1：アイコンと書き出し・読み込み」を選んだ"
+    },
+    {
+      "id": "2026-10-23-icons-backup-built",
+      "date": "2026-10-23",
+      "title": "アイコンと、記録の書き出し・読み込みを実装した。iPad での確認待ち",
+      "source": "Claude",
+      "problem": "記録は iPad のブラウザの中だけにあり、Safari が消すことがある",
+      "decision": "①王の駒のアイコン（180・192・512）を作り、ホーム画面に追加できるようにした ②おとな画面に「かきだす／よみこむ」。書き出しは共有シート（なければ ダウンロード）、読み込みは確認を2段階にして、いまの記録を全部置きかえる ③最初の「はじめる」で、ブラウザに保存を消さないようお願いする（navigator.storage.persist）"
+    },
+    {
+      "id": "2026-10-23-backup-format",
+      "date": "2026-10-23",
+      "title": "書き出しファイルの形：app='shogi-dojo'・version・family・profiles・persons・settings。読み込みは検査してから、古い形式は migrate で補う",
+      "source": "Claude",
+      "problem": "形式を変えても古いファイルを読めるようにしたい",
+      "decision": "src/core/backup.js（migrateFamily・migratePerson・buildBackup・parseBackup）。かぞくの島のファイルは app が違うので断る。プロフィールは6人まで・名前8字まで・アイコンは6種のみ、記録のない人は初期値、プロフィールにない人の記録は捨てる。version が新しいファイルは断る。項目を足したときは、backup.js の migrate に足す（npm test の「古い形式でも読める」が見張る）"
     }
   ]
 }

@@ -1,25 +1,9 @@
 // IndexedDB への保存。キー：family / profiles / settings / person/<id>
 import { get, set, del } from 'idb-keyval';
-import { state, emit, defaultFamily, defaultPerson, defaultSettings, DATA_VERSION } from './store.js';
+import { state, emit, defaultSettings } from './store.js';
+import { migrateFamily, migratePerson, buildBackup, parseBackup } from './backup.js';
 
 const ok = (p) => p.catch((e) => { console.warn('save failed', e); emit('saveError'); return false; }).then((r) => r !== false);
-
-// 古い形式を読めるようにする（データを捨てない）。形式を変えるときはここに足す。
-function migrateFamily(d) {
-  const out = { ...defaultFamily(), ...(d || {}), version: DATA_VERSION };
-  if (!out.tsume || typeof out.tsume !== 'object') out.tsume = {}; // 第4段階で追加
-  return out;
-}
-function migratePerson(d) {
-  const out = { ...defaultPerson(), ...(d || {}), version: DATA_VERSION };
-  if (!out.lessons || typeof out.lessons !== 'object') out.lessons = {};
-  if (!out.drills || typeof out.drills !== 'object') out.drills = {}; // 第3段階で追加
-  if (!out.tsume || typeof out.tsume !== 'object') out.tsume = {}; // 第4段階で追加
-  if (!out.openings || typeof out.openings !== 'object') out.openings = {}; // 第5段階で追加
-  out.match = { ...defaultPerson().match, ...(out.match || {}) }; // 第6段階で追加
-  out.match.prefs = { ...defaultPerson().match.prefs, ...(out.match.prefs || {}) };
-  return out;
-}
 
 export async function loadAll() {
   try {
@@ -53,3 +37,35 @@ export async function switchTo(id) {
 }
 
 export async function removePersonData(id) { try { await del('person/' + id); } catch (e) { console.warn(e); } }
+
+// ---- 書き出し・読み込み ----
+export async function buildExport() {
+  await savePerson();
+  const persons = {};
+  for (const p of state.profiles) {
+    try { persons[p.id] = migratePerson(await get('person/' + p.id)); } catch { persons[p.id] = migratePerson(null); }
+  }
+  state.settings.lastExport = Date.now();
+  await saveSettings();
+  return buildBackup({ family: state.family, profiles: state.profiles, persons, settings: state.settings });
+}
+
+export { parseBackup };
+
+// 読み込み：いまの記録をすべて置きかえる
+export async function applyImport(data) {
+  for (const p of state.profiles) await removePersonData(p.id);
+  state.family = data.family;
+  state.profiles = data.profiles;
+  state.settings = data.settings;
+  state.currentId = null;
+  state.person = null;
+  for (const p of data.profiles) await set('person/' + p.id, data.persons[p.id]);
+  await Promise.all([saveFamily(), saveProfiles(), saveSettings()]);
+  emit();
+}
+
+// 消えにくくする：ブラウザに、保存した記録を勝手に消さないようお願いする（断られても、遊びには影響しない）
+export async function askPersistent() {
+  try { return (await navigator.storage?.persist?.()) === true; } catch { return false; }
+}

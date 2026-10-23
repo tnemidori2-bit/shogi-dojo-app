@@ -115,3 +115,5 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .opts.hidden, .opt-title.hidden, .note.hidden { display: none; }
 .opts .btn.on { background: var(--accent); }
 .btn.danger { background: #e8a198; }
+.note.warn { color: #ffd98a; font-weight: bold; }
+.adult .note { margin: 0; line-height: 1.5; }
