@@ -327,6 +327,22 @@
       "source": "Claude",
       "problem": "形式を変えても古いファイルを読めるようにしたい",
       "decision": "src/core/backup.js（migrateFamily・migratePerson・buildBackup・parseBackup）。かぞくの島のファイルは app が違うので断る。プロフィールは6人まで・名前8字まで・アイコンは6種のみ、記録のない人は初期値、プロフィールにない人の記録は捨てる。version が新しいファイルは断る。項目を足したときは、backup.js の migrate に足す（npm test の「古い形式でも読める」が見張る）"
+    },
+    {
+      "id": "2026-10-23-small-screens",
+      "date": "2026-10-23",
+      "title": "iPhone などの小さい画面（幅430px以下）では、ボタンと余白を詰めて、盤・持ち駒・ボタンが縦に収まるようにする",
+      "source": "満さんの質問（iPhone X で遊べるか）",
+      "problem": "対局とつめしょうぎの画面が、iPhone X（375x812）で縦に21px あふれ、持ち駒の行が画面の外に出た",
+      "decision": "src/style.css の @media (max-width: 430px) で調整。375x812 で、対局・つめしょうぎとも持ち駒の行が657pxまでに収まり、縦スクロール無しになった。盤のマスは約41px。実機の iPhone X（iOS 16 まで）での確認はまだ"
+    },
+    {
+      "id": "2026-10-23-old-browser-fallback",
+      "date": "2026-10-23",
+      "title": "古いタブレットのブラウザでも盤が出るように、dvh が使えない場合は vh で盤の大きさを決める（@supports）",
+      "source": "満さんの質問（施設のタブレットで使えるか）",
+      "problem": "--cell のような変数は、分からない単位（dvh）があっても無視されず、盤が潰れる。また inset も古いブラウザでは効かない",
+      "decision": "src/style.css：基本は vh、@supports (height: 100dvh) のときだけ dvh。inset は top/right/bottom/left に書きかえた。Vite の書き出しは、Chrome87・Safari14・Edge88・Firefox78 以上を想定（ai.worker はモジュール型）。実際の施設のタブレットでの確認はまだ"
     }
   ]
 }
