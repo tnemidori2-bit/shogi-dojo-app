@@ -7,7 +7,7 @@ self.onmessage = (e) => {
   const { id, type, pieces } = e.data;
   try {
     if (type === 'move') {
-      const move = chooseMove({ ...e.data.game, pieces }, e.data.level);
+      const move = chooseMove({ ...e.data.game, pieces }, e.data.level, Math.random, e.data.book);
       self.postMessage({ id, type, move });
     } else if (type === 'hint') {
       const scored = analyze(e.data.game.board, e.data.game.hands, e.data.game.turn, pieces, { depth: 3, time: 1200, quiesce: 3 });
@@ -16,7 +16,7 @@ self.onmessage = (e) => {
       // 自分の手ごとに、ほかの手と点を比べる。悪かった手の場所を見つける
       const out = [];
       e.data.entries.forEach((en, i) => {
-        const scored = analyze(en.board, en.hands, en.side, pieces, { depth: 2, time: 700, quiesce: 2 });
+        const scored = analyze(en.board, en.hands, en.side, pieces, { depth: 2, time: 700, quiesce: 2, exact: true });
         if (!scored.length) return;
         const best = scored[0];
         const played = scored.find((r) => sameMove(r.move, en.move));

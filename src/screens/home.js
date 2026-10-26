@@ -1,5 +1,5 @@
 import { T } from '../text.js';
-import { state, currentProfile, animalOf } from '../core/store.js';
+import { state, currentProfile, animalOf, MATCH_LEVELS } from '../core/store.js';
 import { loadJson, loadPieces } from '../core/data.js';
 import { totalStars, kyuOf, tsumeSolved, tsumeStars, openingStars, matchStars } from '../core/rank.js';
 import { HANDICAPS } from '../shogi/game.js';
@@ -49,14 +49,15 @@ export async function mountHome(root, nav) {
   const matchHtml = `<div class="tsume-set">
     <div class="tsume-head"><span class="lt">${T.matchSetup}</span><span class="stars">${stars(matchStars(state.person))}</span></div>
     <div class="opt-title">${T.levelTitle}</div>
-    <div class="opts" data-group="level">${['weak', 'normal', 'strong'].map((l) => `<button type="button" class="btn small" data-val="${l}">${T.levelLabel[l]}</button>`).join('')}</div>
+    <div class="opts" data-group="level">${MATCH_LEVELS.map((l) => `<button type="button" class="btn small" data-val="${l}">${T.levelLabel[l]}</button>`).join('')}</div>
+    <p class="note">${T.levelNote}</p>
     <div class="opt-title" id="side-title">${T.sideTitle}</div>
     <div class="opts" data-group="side">${[0, 1].map((s_) => `<button type="button" class="btn small" data-val="${s_}">${T.sideLabel[s_]}</button>`).join('')}</div>
     <div class="opt-title">${T.handicapTitle}</div>
     <div class="opts" data-group="handicap">${Object.entries(HANDICAPS).map(([k, v]) => `<button type="button" class="btn small" data-val="${k}">${v.label}</button>`).join('')}</div>
     <p class="note" id="handicap-note">${T.handicapNote}</p>
     <div class="actions"><button class="btn big" type="button" id="match-start">${T.matchStart}</button></div>
-    <p class="note">${T.matchRecord(mrec.wins?.weak || 0, mrec.wins?.normal || 0, mrec.wins?.strong || 0)}<br>${T.matchStarsNote}</p>
+    <p class="note">${T.matchRecord(mrec.wins || {})}<br>${T.matchStarsNote}</p>
   </div>`;
   const tsumeHtml = tsumeSets.map((set) => {
     const solved = tsumeSolved(state.person, set);
@@ -69,7 +70,7 @@ export async function mountHome(root, nav) {
     return `<div class="tsume-set">${head}<div class="nums">${nums}</div></div>`;
   }).join('');
   el.innerHTML = `
-    <div class="topbar"><span>${a.emoji} ${escapeHtml(prof?.name || a.label)}</span><span>${T.rank(kyuOf(stars_, kyu))}　${T.totalStars(stars_, (lessons.length + drills.length + tsumeSets.length + openings.length + 1) * 3)}</span><span>${T.level(state.family.level)}</span>
+    <div class="topbar"><span>${a.emoji} ${escapeHtml(prof?.name || a.label)}</span><span>${T.rank(kyuOf(stars_, kyu))}　${T.totalStars(stars_, (lessons.length + drills.length + tsumeSets.length + openings.length) * 3 + MATCH_LEVELS.length)}</span><span>${T.level(state.family.level)}</span>
       <button class="btn small" type="button" id="switch">${T.next}</button></div>
     <div class="title">${T.homeTitle}</div>
     <div class="signs">${SIGNS.map((s) => `<button class="sign ${s.ready ? '' : 'off'}" type="button" data-sign="${s.key}"><span class="emoji">${s.emoji}</span>${s.label}</button>`).join('')}</div>

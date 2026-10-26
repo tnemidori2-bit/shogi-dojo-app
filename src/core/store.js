@@ -7,6 +7,8 @@ export const ANIMALS = [
   { id: 'bear', emoji: '🐻', label: 'くま' },
   { id: 'cat', emoji: '🐱', label: 'ねこ' },
 ];
+// AIの強さ（弱い順）。★は、駒落ちなしで勝てた強さの数。idは記録に使うので、変えない
+export const MATCH_LEVELS = ['weak', 'normal', 'mid', 'strong', 'master'];
 export const MAX_PROFILES = 6;
 export const NAME_MAX = 8;
 export const DATA_VERSION = 1;

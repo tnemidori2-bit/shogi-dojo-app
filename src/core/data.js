@@ -12,3 +12,11 @@ export async function loadPieces() {
   const d = await loadJson('pieces.json');
   return Object.fromEntries(d.pieces.map((p) => [p.id, p]));
 }
+
+// AIの定跡：book.json の短い手順と、戦法（openings）の手順を合わせた、USI の手順の並び
+export async function loadBook() {
+  const lines = [...(await loadJson('book.json')).lines];
+  const ids = (await loadJson('openings/index.json')).openings;
+  for (const id of ids) lines.push((await loadJson(`openings/${id}.json`)).moves.map((m) => m.usi));
+  return lines;
+}

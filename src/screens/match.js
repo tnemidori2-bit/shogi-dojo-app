@@ -1,10 +1,10 @@
 import { T } from '../text.js';
 import { state } from '../core/store.js';
-import { loadPieces } from '../core/data.js';
+import { loadPieces, loadBook } from '../core/data.js';
 import { defOf, SIZE } from '../shogi/rules.js';
 import { legalMoves, HAND_ORDER } from '../shogi/engine.js';
 import { startGame, playMove, undoMoves, resign } from '../shogi/game.js';
-import { moveLabel } from '../shogi/usi.js';
+import { moveLabel, toUsi } from '../shogi/usi.js';
 import { sfx } from '../core/audio.js';
 import { toast } from '../ui.js';
 
@@ -18,6 +18,8 @@ export async function mountMatch(root, nav, cfg) {
   root.appendChild(el);
   let pieces;
   try { pieces = await loadPieces(); } catch (e) { console.warn(e); toast(T.loadFailed); nav.home(); return () => el.remove(); }
+  let book = [];
+  try { book = await loadBook(); } catch (e) { console.warn(e); } // 定跡が読めなくても、対局はできる
   const hard = state.person?.difficulty === 'hard';
   const me = cfg.me;
   let game = startGame(cfg.handicap, pieces);
@@ -39,7 +41,7 @@ export async function mountMatch(root, nav, cfg) {
     if (cb) { pendingReq.delete(id); cb(e.data); }
   };
   const ask = (payload) => new Promise((resolve) => { const id = ++reqId; pendingReq.set(id, resolve); worker.postMessage({ id, pieces, ...payload }); });
-  const slim = (g) => ({ board: g.board, hands: g.hands, turn: g.turn, handicap: g.handicap });
+  const slim = (g) => ({ board: g.board, hands: g.hands, turn: g.turn, handicap: g.handicap, usiHistory: g.history.map((h) => toUsi(h.move)) });
 
   el.innerHTML = `
     <div class="topbar"><button class="btn small" type="button" id="quit">${T.quit}</button><span id="title"></span><span id="count"></span></div>
@@ -148,7 +150,7 @@ export async function mountMatch(root, nav, cfg) {
     if (game.result || game.turn === me) return;
     busy = true; hint = null; msg = T.aiThinking; draw();
     const t0 = Date.now();
-    const res = await ask({ type: 'move', level: cfg.level, game: slim(game) });
+    const res = await ask({ type: 'move', level: cfg.level, game: slim(game), book });
     if (res.type === 'error' || !res.move) { toast(T.loadFailed); busy = false; draw(); return; }
     // 考えた時間が短すぎると、指した手が分かりにくいので、少し間をおく
     const wait = Math.max(0, 450 - (Date.now() - t0));

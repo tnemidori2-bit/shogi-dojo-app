@@ -1,3 +1,5 @@
+import { MATCH_LEVELS } from './store.js';
+
 // 級：全レッスン・全ドリル・全つめしょうぎの★の合計で決まる（しきい値は levels.json の kyu）
 
 // つめしょうぎ1セットの★：とけた問題の数が starAt（3つ）に届いた数
@@ -15,10 +17,10 @@ export function openingStars(person, id) {
   return r ? (r.learned ? 1 : 0) + (r.clears > 0 ? 1 : 0) + (r.perfect ? 1 : 0) : 0;
 }
 
-// たいきょくの★：駒落ちなしで勝ったことのある強さの数（最大3）
+// たいきょくの★：駒落ちなしで勝ったことのある強さの数（最大5）
 export function matchStars(person) {
   const w = person?.match?.wins || {};
-  return ['weak', 'normal', 'strong'].filter((l) => (w[l] || 0) > 0).length;
+  return MATCH_LEVELS.filter((l) => (w[l] || 0) > 0).length;
 }
 
 export function totalStars(person, lessonIds, drillIds = [], tsumeSets = [], openingIds = []) {
