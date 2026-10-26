@@ -40,6 +40,7 @@ export async function mountTsume(root, nav, setId, problemId) {
   let hinted = false, misses = 0;
   let hint = null;
   let msg = T.tsumeAsk;
+  let tone = ''; // メッセージの見た目：'good'（途中の正解）／'solved'（詰み）
   let elapsed = 0, last = performance.now();
   let timerId = null;
 
@@ -71,7 +72,10 @@ export async function mountTsume(root, nav, setId, problemId) {
   };
 
   function draw() {
-    el.querySelector('#msg').textContent = msg;
+    const msgEl = el.querySelector('#msg');
+    msgEl.textContent = msg;
+    msgEl.className = 'message' + (tone ? ' ' + tone : '');
+    boardEl.classList.toggle('solved', tone === 'solved');
     el.querySelector('#opp').innerHTML = handHtml(1);
     el.querySelector('#mine').innerHTML = handHtml(0);
     let html = '';
@@ -110,7 +114,7 @@ export async function mountTsume(root, nav, setId, problemId) {
 
   function reset() {
     board = parseBoard(problem.board); hands = toHands(problem.hands); left = total;
-    sel = null; targets = []; pending = null; hint = null; msg = T.tsumeAsk; draw();
+    sel = null; targets = []; pending = null; hint = null; msg = T.tsumeAsk; tone = ''; draw();
   }
 
   function showHint() {
@@ -127,17 +131,17 @@ export async function mountTsume(root, nav, setId, problemId) {
   // 攻めの手を指す。詰みに向かう手だけを盤に反映し、そうでなければ理由を言って戻す
   function play(move) {
     const r = applyFull(board, hands, move, 0);
-    if (!inCheck(r.board, 1, pieces)) { misses++; sfx('no'); msg = T.tsumeNotCheck; sel = null; targets = []; draw(); return; }
-    if (!validAttack(board, hands, move, left, pieces)) { misses++; sfx('no'); msg = T.tsumeNotMate; sel = null; targets = []; draw(); return; }
+    if (!inCheck(r.board, 1, pieces)) { misses++; sfx('no'); tone = ''; msg = T.tsumeNotCheck; sel = null; targets = []; draw(); return; }
+    if (!validAttack(board, hands, move, left, pieces)) { misses++; sfx('no'); tone = ''; msg = T.tsumeNotMate; sel = null; targets = []; draw(); return; }
     board = r.board; hands = r.hands; sel = null; targets = []; hint = null; sfx('move');
     const replies = legalMoves(board, hands, 1, pieces);
-    if (replies.length === 0) { done = true; msg = T.tsumeSolved; sfx('clear'); clearInterval(timerId); tick(); draw(); return; }
-    busy = true; msg = ''; draw();
+    if (replies.length === 0) { done = true; tone = 'solved'; msg = T.tsumeSolved; sfx('clear'); clearInterval(timerId); tick(); draw(); return; }
+    busy = true; tone = 'good'; msg = T.tsumeGood; sfx('ok'); draw();
     setTimeout(() => {
       const rep = bestDefense(board, hands, left - 1, pieces);
       const q = applyFull(board, hands, rep, 1);
       board = q.board; hands = q.hands; left--; busy = false; sfx('move');
-      msg = T.tsumeEscaped; draw();
+      tone = 'good'; msg = T.tsumeEscaped; draw();
     }, 700);
   }
 

@@ -47,6 +47,12 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .lesson { min-height: 64px; display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; font-size: 22px; font-weight: bold; font-family: inherit; border: 0; border-radius: 14px; background: var(--paper); color: var(--ink); }
 .stars { color: #d79a00; letter-spacing: .1em; }
 /* 盤 */
+.message.good { background: #2d7a46; font-weight: bold; animation: pop .3s ease-out; }
+.message.solved { background: #e0a526; color: #2b2118; font-size: 28px; font-weight: bold; min-height: 84px; animation: pop .5s ease-out; }
+.board.solved { animation: flash .9s ease-out; }
+@keyframes pop { 0% { transform: scale(.85); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes flash { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,214,90,0); } 30% { box-shadow: 0 0 0 10px rgba(255,214,90,.9); } }
+@media (prefers-reduced-motion: reduce) { .message.good, .message.solved, .board.solved { animation: none; } }
 .message { width: min(calc(var(--cell) * 9), 100%); min-height: 64px; display: flex; align-items: center; justify-content: center; text-align: center; background: var(--bg2); border-radius: 12px; padding: 8px 12px; font-size: 18px; line-height: 1.4; }
 .board { display: grid; grid-template-columns: repeat(9, var(--cell)); grid-auto-rows: var(--cell); background: var(--wood); border: 3px solid var(--line); border-radius: 4px; }
 .cell { position: relative; padding: 0; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: transparent; display: flex; align-items: center; justify-content: center; }
