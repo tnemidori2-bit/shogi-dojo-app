@@ -55,3 +55,50 @@ test('五目：CPUは相手の4連を止め、自分の4連は完成させる', 
   const mv = G.cpuMove(t);
   assert.equal(mv[0], 2); assert.ok(mv[1] === 2 || mv[1] === 7);
 });
+
+import * as Go from '../src/games/go.js';
+const put = (s, pts) => { for (const [r, c] of pts) { s = Go.play(s, r, c); assert.ok(s, `${r},${c}`); } return s; };
+test('囲碁：石を取れる', () => {
+  // 白(0,1)を黒(0,0)(0,2)(1,1)で囲む
+  let s = put(Go.newState(), [[0, 0], [0, 1], [8, 8], [8, 7], [0, 2], [5, 5]]);
+  // 黒 (1,1) を打つと白(0,1)が取れる
+  s = put(s, [[1, 1]]);
+  assert.equal(s.b[1], 0);
+  assert.equal(s.caps[1], 1);
+});
+test('囲碁：自殺手は置けない、コウは直後に取り返せない', () => {
+  let s = Go.newState();
+  s = put(s, [[0, 1], [8, 8], [1, 0]]); // 黒が(0,1)(1,0)、白は離れる
+  assert.equal(Go.play({ ...s, turn: 2 }, 0, 0), null); // 白の(0,0)は自殺手
+  // コウ
+  s = Go.newState();
+  s = put(s, [[0, 1], [0, 2], [1, 0], [1, 3], [2, 1], [2, 2], [8, 0], [1, 1]]); // 白(1,1)で黒(1,0)...
+  s = Go.newState();
+  // 典型的なコウの形を作る
+  const b = new Array(81).fill(0);
+  for (const [r, c] of [[0, 1], [1, 0], [2, 1]]) b[r * 9 + c] = 1;
+  for (const [r, c] of [[0, 2], [1, 3], [2, 2], [1, 1]]) b[r * 9 + c] = 2;
+  let k = { ...Go.newState(), b, turn: 1 };
+  const taken = Go.play(k, 1, 2); // 黒が白(1,1)を取る
+  assert.ok(taken);
+  assert.equal(taken.b[1 * 9 + 1], 0);
+  assert.equal(Go.play(taken, 1, 1), null); // 白はすぐ取り返せない
+});
+test('囲碁：2回パスで終局、地を数える', () => {
+  let s = Go.newState();
+  s = put(s, [[4, 4]]);
+  s = Go.pass(s); s = Go.pass(s);
+  assert.equal(s.result, 'black'); // 黒の1子が盤全体を囲んだ扱い（81）> 白0+7
+  assert.deepEqual(Go.score(s.b), { black: 81, white: 0 });
+});
+test('囲碁：CPU同士で終局まで進む', () => {
+  for (let g = 0; g < 10; g++) {
+    let s = Go.newState(), guard = 0;
+    while (!s.result && guard++ < 400) {
+      const m = Go.cpuMove(s);
+      s = m ? Go.play(s, m[0], m[1]) : Go.pass(s);
+      assert.ok(s);
+    }
+    assert.ok(s.result, `game ${g}`);
+  }
+});

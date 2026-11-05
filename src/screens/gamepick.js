@@ -12,6 +12,7 @@ export function mountGamePick(root, nav) {
       <button class="pick" type="button" data-game="shogi"><span class="emoji">☗</span>${g.shogi}</button>
       <button class="pick" type="button" data-game="othello"><span class="emoji">⚫</span>${g.othello}</button>
       <button class="pick" type="button" data-game="gomoku"><span class="emoji">⚪</span>${g.gomoku}</button>
+      <button class="pick" type="button" data-game="go"><span class="emoji">◎</span>${g.go}</button>
     </div>
     <div class="pick-vs hidden">
       <div class="opt-title"></div>
