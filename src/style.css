@@ -185,3 +185,8 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .stone.s2 { background: radial-gradient(circle at 35% 30%, #fff, #cfcfcf 80%); }
 .stone.last::after { content: ''; position: absolute; left: 50%; top: 50%; width: 28%; height: 28%; transform: translate(-50%, -50%); border-radius: 50%; background: #e53935; }
 .hint { position: relative; z-index: 1; width: 26%; height: 26%; border-radius: 50%; background: rgba(255,255,255,.7); box-shadow: 0 0 0 2px rgba(0,0,0,.25); }
+.pick.hidden, .btn.hidden { display: none; }
+.lesson-msg { min-height: 64px; background: var(--bg2); border-radius: 12px; padding: 8px 12px; line-height: 1.5; }
+.lesson-msg.ok { background: #2d7a46; font-weight: bold; }
+.lesson-msg.pass { background: var(--accent); color: var(--ink); font-weight: bold; }
+.golesson .lessons { max-height: none; }

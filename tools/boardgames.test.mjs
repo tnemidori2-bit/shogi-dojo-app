@@ -102,3 +102,21 @@ test('囲碁：CPU同士で終局まで進む', () => {
     assert.ok(s.result, `game ${g}`);
   }
 });
+
+import { LESSONS, judge } from '../src/games/golessons.js';
+// 各レッスンの「正解の手」と「まちがいの手」
+const SOLVE = { place: [[4, 4]], liberty: [[3, 4]], capture1: [[4, 5]], corner: [[1, 0]], atari: [[4, 3]], escape: [[4, 5]], capture2: [[4, 6]] };
+const WRONG = { liberty: [[0, 0]], capture1: [[0, 0]], corner: [[8, 8]], atari: [[0, 0]], escape: [[0, 0]], capture2: [[0, 0]] };
+function setup(l) { const s = Go.newState(); for (const [r, c, p] of l.stones) s.b[r * 9 + c] = p; return s; }
+test('囲碁レッスン：正解の手でできる、まちがいの手ではできない', () => {
+  for (const l of LESSONS) {
+    if (l.id === 'suicide') continue;
+    const base = setup(l);
+    for (const [r, c] of SOLVE[l.id]) { const n = Go.play(base, r, c); assert.ok(n, l.id); assert.ok(judge(l, base, n, r, c), l.id); }
+    for (const [r, c] of WRONG[l.id] || []) { const n = Go.play(base, r, c); assert.ok(n, l.id); assert.ok(!judge(l, base, n, r, c), `wrong ${l.id}`); }
+  }
+});
+test('囲碁レッスン：おけない場所は本当におけない', () => {
+  const l = LESSONS.find((x) => x.id === 'suicide');
+  assert.equal(Go.play(setup(l), 0, 0), null);
+});
