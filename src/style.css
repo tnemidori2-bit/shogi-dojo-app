@@ -152,3 +152,36 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
     .tsume-screen { --cell: min(calc((100vw - 16px) / 9), calc((100dvh - 330px) / 9)); }
   }
 }
+
+/* ゲームを選ぶ・オセロ・五目並べ */
+.back-games { position: absolute; top: calc(10px + env(safe-area-inset-top)); left: 10px; }
+.pick-list { display: flex; flex-direction: column; gap: 14px; width: min(420px, 100%); }
+.pick-list.hidden, .pick-vs.hidden { display: none; }
+.pick-vs { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(420px, 100%); }
+.pick { min-height: 84px; display: flex; align-items: center; justify-content: center; gap: 14px; border: 0; border-radius: 18px; background: var(--wood); color: var(--ink); font-family: inherit; font-size: 28px; font-weight: bold; }
+.pick .emoji { font-size: 36px; }
+.pick:active { transform: scale(.97); }
+.boardgame { --bs: min(calc(100vw - 16px), 560px, calc(100vh - 290px)); }
+@supports (height: 100dvh) { .boardgame { --bs: min(calc(100vw - 16px), 560px, calc(100dvh - 290px)); } }
+.ginfo { width: var(--bs); display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; }
+.gmsg { width: var(--bs); min-height: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; font-size: 18px; }
+.gmsg.pass { background: var(--accent); color: var(--ink); border-radius: 12px; font-weight: bold; }
+.gmsg.result { background: var(--bg2); border-radius: 14px; padding: 10px; }
+.big-result { font-size: 36px; font-weight: bold; color: var(--accent); }
+.gwrap { display: flex; justify-content: center; }
+.gboard { display: grid; grid-template-columns: repeat(var(--n), 1fr); width: var(--bs); height: var(--bs); border: 3px solid var(--line); border-radius: 4px; background: #2e8b57; touch-action: manipulation; }
+.gboard.gomoku { background: var(--wood); }
+.gcell { position: relative; padding: 0; margin: 0; border: 0; border-right: 1px solid rgba(0,0,0,.45); border-bottom: 1px solid rgba(0,0,0,.45); background: transparent; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; }
+.gcell.r { border-right: 0; } .gcell.b { border-bottom: 0; }
+.gboard.gomoku .gcell { border: 0; }
+.gboard.gomoku .gcell::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line); }
+.gboard.gomoku .gcell::after { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--line); }
+.gboard.gomoku .gcell.l::before { left: 50%; } .gboard.gomoku .gcell.r::before { right: 50%; }
+.gboard.gomoku .gcell.t::after { top: 50%; } .gboard.gomoku .gcell.b::after { bottom: 50%; }
+.gcell:disabled { opacity: 1; }
+.stone { position: relative; z-index: 1; width: 84%; height: 84%; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.gboard.gomoku .stone { width: 90%; height: 90%; }
+.stone.s1 { background: radial-gradient(circle at 35% 30%, #555, #111 70%); }
+.stone.s2 { background: radial-gradient(circle at 35% 30%, #fff, #cfcfcf 80%); }
+.stone.last::after { content: ''; position: absolute; left: 50%; top: 50%; width: 28%; height: 28%; transform: translate(-50%, -50%); border-radius: 50%; background: #e53935; }
+.hint { position: relative; z-index: 1; width: 26%; height: 26%; border-radius: 50%; background: rgba(255,255,255,.7); box-shadow: 0 0 0 2px rgba(0,0,0,.25); }

@@ -5,6 +5,8 @@ import { loadJson } from './core/data.js';
 import { totalStars, kyuOf, tsumeStars, openingStars, matchStars } from './core/rank.js';
 import { applyStreak } from './shogi/drills.js';
 import { T } from './text.js';
+import { mountGamePick } from './screens/gamepick.js';
+import { mountBoardGame } from './screens/boardgame.js';
 import { mountStart } from './screens/start.js';
 import { mountProfile } from './screens/profile.js';
 import { mountAdult } from './screens/adult.js';
@@ -157,6 +159,8 @@ async function recordMatch(res) {
 }
 
 const nav = {
+  games: () => show(mountGamePick),
+  boardgame: (cfg) => show(mountBoardGame, cfg),
   start: () => show(mountStart),
   profile: async () => { await switchTo(null); await show(mountProfile); },
   adult: () => show(mountAdult),
@@ -176,6 +180,6 @@ const nav = {
 
 (async () => {
   await loadAll();
-  nav.start();
+  nav.games();
   if (import.meta.env.DEV) window.__state = state;
 })();

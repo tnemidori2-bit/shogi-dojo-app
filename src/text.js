@@ -1,5 +1,23 @@
 // 画面に出す文字はここに集める
 export const T = {
+  games: {
+    pick: 'ゲームを えらぶ',
+    shogi: '将棋',
+    othello: 'オセロ',
+    gomoku: '五目並べ',
+    two: 'ふたりで',
+    cpu: 'コンピュータと',
+    reset: 'はじめから',
+    again: 'もう一度',
+    black: '黒',
+    white: '白',
+    turn: (c) => `${c}の番`,
+    stones: (b, w) => `黒 ${b} ・ 白 ${w}`,
+    movesCount: (n) => `${n}手`,
+    pass: (c) => `${c}は 置ける場所がないので パスです`,
+    win: (c) => `${c}の勝ち`,
+    draw: '引き分け',
+  },
   title: '将棋道場',
   start: 'はじめる',
   whoPlays: 'だれが あそぶ？',
