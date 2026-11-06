@@ -73,13 +73,58 @@ function isDanger(b, r, c) {
   return false;
 }
 
-// 簡単なCPU：隅 > 隅の隣を避ける > 裏返せる石が多い手。同点は乱数
-export function cpuMove(s, rng = Math.random) {
+// 場所の重み（隅が高く、隅の隣が低い）。上の左4分の1だけ書いて、折り返して使う
+const Q = [[100, -20, 10, 5], [-20, -50, -2, -2], [10, -2, -1, -1], [5, -2, -1, -1]];
+const WEIGHT = new Array(SIZE * SIZE).fill(0).map((_, i) => {
+  const r = Math.floor(i / SIZE), c = i % SIZE;
+  return Q[r < 4 ? r : 7 - r][c < 4 ? c : 7 - c];
+});
+const countMoves = (b, p) => legalMoves(b, p).length;
+// p から見た盤の点数：場所の重み＋置ける場所の数の差
+function evalBoard(b, p) {
+  let v = 0;
+  for (let i = 0; i < b.length; i++) { if (b[i] === p) v += WEIGHT[i]; else if (b[i] === opp(p)) v -= WEIGHT[i]; }
+  return v + 5 * (countMoves(b, p) - countMoves(b, opp(p)));
+}
+function applyMove(b, m, p) {
+  const nb = b.slice();
+  nb[m.r * SIZE + m.c] = p;
+  for (const i of m.flips) nb[i] = p;
+  return nb;
+}
+// p の番で depth 手先まで読んだときの、p から見た点数（アルファ・ベータ法）
+function negamax(b, p, depth, alpha, beta) {
+  const moves = legalMoves(b, p);
+  if (!moves.length) {
+    if (!countMoves(b, opp(p))) { const n = count(b); return (p === 1 ? n.black - n.white : n.white - n.black) * 200; }
+    return -negamax(b, opp(p), depth, -beta, -alpha); // パス
+  }
+  if (depth === 0) return evalBoard(b, p);
+  let best = -Infinity;
+  for (const m of moves) {
+    const v = -negamax(applyMove(b, m, p), opp(p), depth - 1, -beta, -alpha);
+    if (v > best) best = v;
+    if (best > alpha) alpha = best;
+    if (alpha >= beta) break;
+  }
+  return best;
+}
+
+const pickBest = (items, score, rng) => {
+  const best = Math.max(...items.map(score));
+  const top = items.filter((x) => score(x) === best);
+  return top[Math.floor(rng() * top.length)];
+};
+
+// CPU。level 1=でたらめ 2=たくさん裏返す 3=隅を取り隅の隣を避ける 4=場所の重みと置ける数で1手先 5=4手先まで読む
+export function cpuMove(s, rng = Math.random, level = 3) {
   const moves = legalMoves(s.b, s.turn);
   if (!moves.length) return null;
-  const score = (m) => (isCorner(m.r, m.c) ? 10000 : 0) - (isDanger(s.b, m.r, m.c) ? 1000 : 0) + m.flips.length;
-  const best = Math.max(...moves.map(score));
-  const top = moves.filter((m) => score(m) === best);
-  const m = top[Math.floor(rng() * top.length)];
+  let m;
+  if (level <= 1) m = moves[Math.floor(rng() * moves.length)];
+  else if (level === 2) m = pickBest(moves, (x) => x.flips.length, rng);
+  else if (level === 3) m = pickBest(moves, (x) => (isCorner(x.r, x.c) ? 10000 : 0) - (isDanger(s.b, x.r, x.c) ? 1000 : 0) + x.flips.length, rng);
+  else if (level === 4) m = pickBest(moves, (x) => evalBoard(applyMove(s.b, x, s.turn), s.turn), rng);
+  else m = pickBest(moves, (x) => -negamax(applyMove(s.b, x, s.turn), opp(s.turn), 3, -Infinity, Infinity), rng);
   return [m.r, m.c];
 }

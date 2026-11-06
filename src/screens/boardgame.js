@@ -4,6 +4,7 @@ import { createBoard } from '../games/board.js';
 import * as othello from '../games/othello.js';
 import * as gomoku from '../games/gomoku.js';
 import * as go from '../games/go.js';
+import { LEVEL_COUNT, recordWin } from '../games/levels.js';
 
 const RULES = { othello, gomoku, go };
 const CPU_WAIT = 500;   // CPUが打つまでの待ち（ミリ秒）
@@ -16,7 +17,7 @@ export function mountBoardGame(root, nav, cfg) {
   const el = document.createElement('div');
   el.className = 'screen boardgame';
   el.innerHTML = `
-    <div class="topbar"><button class="btn small" type="button" data-act="back">${T.back}</button><span>${g[cfg.game]}・${cfg.vs === 'cpu' ? g.cpu : g.two}</span><span></span></div>
+    <div class="topbar"><button class="btn small" type="button" data-act="back">${T.back}</button><span>${g[cfg.game]}・${cfg.vs === 'cpu' ? `${g.cpu} ${g.levelLabel(cfg.level, g.levelNames[cfg.level - 1])}` : g.two}</span><span></span></div>
     <div class="ginfo"><span class="turn"></span><span class="count"></span></div>
     <div class="gmsg"></div>
     <div class="gwrap"></div>
@@ -37,8 +38,15 @@ export function mountBoardGame(root, nav, cfg) {
     const msg = $('.gmsg');
     if (s.result) {
       msg.className = 'gmsg result';
-      msg.innerHTML = `<div class="big-result">${s.result === 'draw' ? g.draw : g.win(s.result === 'black' ? g.black : g.white)}</div>${s.detail ? `<div>${s.detail}</div>` : ''}
-        <div class="actions"><button class="btn big" type="button" data-act="reset">${g.again}</button><button class="btn" type="button" data-act="back">${T.back}</button></div>`;
+      const won = cfg.vs === 'cpu' && s.result === 'black';
+      let levelNote = '', nextBtn = '';
+      if (won) {
+        const opened = recordWin(cfg.game, cfg.level);
+        levelNote = `<div class="level-note">${g.levelCleared(cfg.level)} ${opened ? g.levelOpened(cfg.level + 1) : cfg.level >= LEVEL_COUNT ? g.levelAll : ''}</div>`;
+        if (cfg.level < LEVEL_COUNT) nextBtn = `<button class="btn big" type="button" data-act="nextlevel">${g.levelNext}</button>`;
+      }
+      msg.innerHTML = `<div class="big-result">${s.result === 'draw' ? g.draw : g.win(s.result === 'black' ? g.black : g.white)}</div>${s.detail ? `<div>${s.detail}</div>` : ''}${levelNote}
+        <div class="actions">${nextBtn}<button class="btn ${nextBtn ? '' : 'big'}" type="button" data-act="reset">${cfg.vs === 'cpu' && !won ? g.levelRetry : g.again}</button><button class="btn" type="button" data-act="back">${T.back}</button></div>`;
     } else if (s.passed) {
       msg.className = 'gmsg pass'; msg.textContent = g.pass(s.passed === 1 ? g.black : g.white);
     } else if (cfg.game === 'go' && s.passes === 1) {
@@ -62,7 +70,7 @@ export function mountBoardGame(root, nav, cfg) {
 
   function cpuMove() {
     if (dead || !cpuTurn()) return;
-    const m = rules.cpuMove(s);
+    const m = rules.cpuMove(s, Math.random, cfg.level || 3);
     if (!m && !rules.pass) return;
     s = m ? rules.play(s, m[0], m[1]) : rules.pass(s); // 囲碁のCPUは、打つ手がなければパス
     sfx('tap');
@@ -92,6 +100,7 @@ export function mountBoardGame(root, nav, cfg) {
     if (b.dataset.act === 'back') nav.games();
     else if (b.dataset.act === 'reset') reset();
     else if (b.dataset.act === 'pass') humanPass();
+    else if (b.dataset.act === 'nextlevel') nav.boardgame({ ...cfg, level: cfg.level + 1 });
   });
 
   reset();

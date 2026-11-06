@@ -120,3 +120,59 @@ test('囲碁レッスン：おけない場所は本当におけない', () => {
   const l = LESSONS.find((x) => x.id === 'suicide');
   assert.equal(Go.play(setup(l), 0, 0), null);
 });
+
+// ---- 強さの段階 ----
+function duel(rules, a, b, games, opts = {}) {
+  // a が黒・白を交互に持って b と対戦し、a の勝ち数を返す
+  let wins = 0;
+  for (let g = 0; g < games; g++) {
+    const aIsBlack = g % 2 === 0;
+    let s = rules.newState(), guard = 0;
+    while (!s.result && guard++ < 500) {
+      const lv = (s.turn === 1) === aIsBlack ? a : b;
+      const m = rules.cpuMove(s, Math.random, lv, opts.ms);
+      s = m ? rules.play(s, m[0], m[1]) : (rules.pass ? rules.pass(s) : null);
+      assert.ok(s, 'illegal');
+    }
+    if (s.result === (aIsBlack ? 'black' : 'white')) wins++;
+  }
+  return wins;
+}
+test('強さ：オセロは段階が上がるほど強い', () => {
+  assert.ok(duel(O, 3, 1, 20) >= 15, '3>1');
+  assert.ok(duel(O, 5, 3, 10) >= 7, '5>3');
+  assert.ok(duel(O, 5, 1, 6) >= 5, '5>1');
+});
+test('強さ：五目並べは段階が上がるほど強い', () => {
+  assert.ok(duel(G, 2, 1, 20) >= 14, '2>1');
+  assert.ok(duel(G, 4, 2, 20) >= 15, '4>2');
+  assert.ok(duel(G, 5, 3, 20) >= 14, '5>3');
+});
+test('強さ：囲碁は段階が上がるほど強い（時間が掛かるので少なめ）', () => {
+  assert.ok(duel(Go, 3, 1, 10, { ms: 20 }) >= 6, '3>1');
+  assert.ok(duel(Go, 5, 1, 4, { ms: 20 }) >= 3, '5>1');
+});
+test('全レベルで必ず合法手を返す', () => {
+  for (const [R, name] of [[O, 'o'], [G, 'g'], [Go, 'go']]) {
+    for (let lv = 1; lv <= 5; lv++) {
+      const s = R.newState();
+      const m = R.cpuMove(s, Math.random, lv, 10);
+      assert.ok(m === null || R.play(s, m[0], m[1]), `${name} lv${lv}`);
+    }
+  }
+});
+
+test('レベル：勝つと次が開き、同じ段階の再勝利では開かない', async () => {
+  const mem = {};
+  globalThis.localStorage = { getItem: (k) => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = v; } };
+  const L = await import('../src/games/levels.js');
+  assert.equal(L.unlockedLevel('go'), 1);
+  assert.equal(L.recordWin('go', 1), true);
+  assert.equal(L.unlockedLevel('go'), 2);
+  assert.equal(L.unlockedLevel('othello'), 1); // ゲームごとに別
+  assert.equal(L.recordWin('go', 1), false);
+  assert.equal(L.recordWin('go', 5), false); // 最後の段階は「次」が無い
+  assert.equal(L.clearedLevel('go'), 5);
+  assert.equal(L.unlockedLevel('go'), 5);
+  delete globalThis.localStorage;
+});

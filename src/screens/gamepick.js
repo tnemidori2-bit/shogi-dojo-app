@@ -1,5 +1,6 @@
 import { T } from '../text.js';
 import { unlock, sfx } from '../core/audio.js';
+import { LEVEL_COUNT, clearedLevel, unlockedLevel } from '../games/levels.js';
 
 // 起動したときに出る「ゲームを選ぶ」画面
 export function mountGamePick(root, nav) {
@@ -22,10 +23,24 @@ export function mountGamePick(root, nav) {
         <button class="pick hidden" type="button" data-vs="lesson">${g.lesson}</button>
       </div>
       <button class="btn small" type="button" data-act="cancel">${T.back}</button>
+    </div>
+    <div class="pick-level hidden">
+      <div class="opt-title">${g.levelPick}</div>
+      <div class="pick-list levels"></div>
+      <button class="btn small" type="button" data-act="levels-back">${T.back}</button>
     </div>`;
   const list = el.querySelector('.pick-list');
   const vs = el.querySelector('.pick-vs');
+  const lv = el.querySelector('.pick-level');
   let game = null;
+  function showLevels() {
+    const open = unlockedLevel(game), cleared = clearedLevel(game);
+    lv.querySelector('.levels').innerHTML = Array.from({ length: LEVEL_COUNT }, (_, i) => {
+      const n = i + 1, locked = n > open;
+      return `<button class="pick level${locked ? ' locked' : ''}" type="button" data-level="${n}" ${locked ? 'disabled' : ''}>${g.levelLabel(n, g.levelNames[i])}<span class="stars">${n <= cleared ? '★' : locked ? '🔒' : ''}</span></button>`;
+    }).join('');
+    vs.classList.add('hidden'); lv.classList.remove('hidden');
+  }
   el.addEventListener('click', (ev) => {
     const b = ev.target.closest('button');
     if (!b) return;
@@ -37,7 +52,10 @@ export function mountGamePick(root, nav) {
       vs.querySelector('[data-vs=lesson]').classList.toggle('hidden', game !== 'go');
       list.classList.add('hidden'); vs.classList.remove('hidden');
     } else if (b.dataset.vs === 'lesson') nav.golesson();
+    else if (b.dataset.vs === 'cpu') showLevels();
     else if (b.dataset.vs) nav.boardgame({ game, vs: b.dataset.vs });
+    else if (b.dataset.level) nav.boardgame({ game, vs: 'cpu', level: Number(b.dataset.level) });
+    else if (b.dataset.act === 'levels-back') { lv.classList.add('hidden'); vs.classList.remove('hidden'); }
     else if (b.dataset.act === 'cancel') { vs.classList.add('hidden'); list.classList.remove('hidden'); }
   });
   root.appendChild(el);

@@ -55,18 +55,75 @@ function near(b, r, c) {
   return n;
 }
 
-export function cpuMove(s, rng = Math.random) {
+// (r,c) に me が置いたときの点数（自分の連と、相手を止める価値）
+function evalCell(b, r, c, me) {
+  const you = opp(me);
+  let sc = near(b, r, c);
+  for (const [dr, dc] of DIRS) {
+    const a = run(b, r, c, me, dr, dc), o = run(b, r, c, you, dr, dc);
+    sc += lineScore(a.len, a.ends, true) + lineScore(o.len, o.ends, false);
+  }
+  return sc;
+}
+
+// (r,c) に p が置いたときの、p 自身の攻めの点数だけ（相手を止める価値は含めない）
+function attackCell(b, r, c, p) {
+  let sc = 0;
+  for (const [dr, dc] of DIRS) { const a = run(b, r, c, p, dr, dc); sc += lineScore(a.len, a.ends, true); }
+  return sc;
+}
+
+function emptyCells(b, onlyNear) {
+  const out = [];
+  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+    if (b[r * SIZE + c] === 0 && (!onlyNear || near(b, r, c) > 0)) out.push([r, c]);
+  }
+  return out;
+}
+
+const pick = (arr, rng) => arr[Math.floor(rng() * arr.length)];
+
+// そこに置くと p が5つ並ぶ場所
+function fiveCells(b, cells, p) {
+  return cells.filter(([r, c]) => DIRS.some(([dr, dc]) => run(b, r, c, p, dr, dc).len >= 5));
+}
+
+// CPU。level 1=石の近くにでたらめ 2=5つ並べる・相手の5つ止めだけする 3=点数評価（ときどきうっかり）
+//      4=点数評価 5=点数評価＋相手の返し手を1手読む
+export function cpuMove(s, rng = Math.random, level = 4) {
   const me = s.turn, you = opp(me);
   if (s.moves === 0) return [7, 7];
-  let best = -1, top = [];
-  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-    if (s.b[r * SIZE + c] !== 0) continue;
-    let sc = near(s.b, r, c);
-    for (const [dr, dc] of DIRS) {
-      const a = run(s.b, r, c, me, dr, dc), o = run(s.b, r, c, you, dr, dc);
-      sc += lineScore(a.len, a.ends, true) + lineScore(o.len, o.ends, false);
-    }
-    if (sc > best) { best = sc; top = [[r, c]]; } else if (sc === best) top.push([r, c]);
+  const cells = emptyCells(s.b, true);
+  if (!cells.length) { const all = emptyCells(s.b, false); return all.length ? pick(all, rng) : null; }
+  if (level <= 1) return pick(cells, rng);
+  if (level === 2) {
+    const win = fiveCells(s.b, cells, me);
+    if (win.length) return pick(win, rng);
+    const block = fiveCells(s.b, cells, you);
+    return block.length ? pick(block, rng) : pick(cells, rng);
   }
-  return top.length ? top[Math.floor(rng() * top.length)] : null;
+  const scored = cells.map(([r, c]) => ({ r, c, sc: evalCell(s.b, r, c, me) }));
+  if (level === 3) {
+    if (rng() < 0.4) return pick(cells, rng); // ときどき、うっかり別の場所に打つ
+    const top = Math.max(...scored.map((x) => x.sc));
+    const m = pick(scored.filter((x) => x.sc === top), rng);
+    return [m.r, m.c];
+  }
+  if (level === 4) {
+    const top = Math.max(...scored.map((x) => x.sc));
+    const m = pick(scored.filter((x) => x.sc === top), rng);
+    return [m.r, m.c];
+  }
+  // level 5: 点数の高い候補を何手か選び、置いたあとの相手の最良の返し手を引いて比べる
+  scored.sort((a, b) => b.sc - a.sc);
+  let best = null;
+  for (const x of scored.slice(0, 10)) {
+    if (x.sc >= 100000) return [x.r, x.c]; // 自分の5つ
+    const b2 = s.b.slice(); b2[x.r * SIZE + x.c] = me;
+    let reply = 0;
+    for (const [r, c] of emptyCells(b2, true)) reply = Math.max(reply, attackCell(b2, r, c, you));
+    const v = x.sc - 0.9 * reply + rng();
+    if (!best || v > best.v) best = { r: x.r, c: x.c, v };
+  }
+  return [best.r, best.c];
 }

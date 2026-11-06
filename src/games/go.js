@@ -94,38 +94,76 @@ export function pass(s) {
 
 export function hints() { return new Set(); }
 
-// 簡単なCPU：石を取れるなら取る／アタリの自分の石を逃がす／それ以外は石の近くのランダムな手。自分の目は埋めない
-export function cpuMove(s, rng = Math.random) {
-  const me = s.turn;
-  const cands = [];
+const ownEye = (b, r, c, me) => NB.every(([dy, dx]) => !inside(r + dy, c + dx) || b[(r + dy) * SIZE + c + dx] === me);
+const edge = (r, c) => r === 0 || c === 0 || r === SIZE - 1 || c === SIZE - 1;
+
+// 打てる手（自分の目を埋めない）の一覧。点数は、石を取る・アタリを逃がす・相手をアタリにする・近くに石がある、など
+function candidates(s, rng, selfAtariCheck) {
+  const me = s.turn, out = [];
   for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
     const t = tryPlay(s, r, c);
-    if (!t) continue;
+    if (!t || ownEye(s.b, r, c, me)) continue;
     let sc = t.captured * 100;
     const g = group(t.b, r, c);
-    // アタリ（呼吸点1）の自分の石につながる手は、呼吸点が増えるなら加点
     for (const [dy, dx] of NB) {
       const y = r + dy, x = c + dx;
-      if (inside(y, x) && s.b[y * SIZE + x] === me && group(s.b, y, x).libs === 1 && g.libs >= 2) sc += 60;
+      if (!inside(y, x)) continue;
+      if (s.b[y * SIZE + x] === me && group(s.b, y, x).libs === 1 && g.libs >= 2) sc += 60; // アタリの自分の石を逃がす
+      if (t.b[y * SIZE + x] === opp(me) && group(t.b, y, x).libs === 1) sc += 20; // 相手をアタリにする
     }
-    // 相手の石をアタリにする手
-    for (const [dy, dx] of NB) {
-      const y = r + dy, x = c + dx;
-      if (inside(y, x) && t.b[y * SIZE + x] === opp(me) && group(t.b, y, x).libs === 1) sc += 20;
-    }
-    // 自分の目（まわりが全部自分の石か盤の外）は埋めない
-    const own = NB.every(([dy, dx]) => !inside(r + dy, c + dx) || s.b[(r + dy) * SIZE + c + dx] === me);
-    if (own) continue;
-    // 石が近いほど少し加点。端すぎる場所は少し減点
+    if (selfAtariCheck && g.libs === 1 && t.captured === 0) sc -= 80; // 自分からアタリになる手は避ける
     let near = 0;
     for (let y = r - 2; y <= r + 2; y++) for (let x = c - 2; x <= c + 2; x++) if (inside(y, x) && s.b[y * SIZE + x]) near++;
-    sc += Math.min(near, 6) + (r === 0 || c === 0 || r === SIZE - 1 || c === SIZE - 1 ? -3 : 0) + rng() * 2;
-    cands.push({ r, c, sc });
+    sc += Math.min(near, 6) + (edge(r, c) ? -3 : 0) + rng() * 2;
+    out.push({ r, c, sc, t });
   }
-  const sc = score(s.b);
-  const ahead = me === 1 ? sc.black > sc.white + KOMI : sc.white + KOMI > sc.black;
-  if (!cands.length || (s.passes === 1 && ahead) || s.moves > 120) return null; // null = パス
-  const best = Math.max(...cands.map((x) => x.sc));
-  const m = cands.find((x) => x.sc === best);
-  return [m.r, m.c];
+  return out;
+}
+
+// 盤が決まったあと、でたらめに打ち進めて、me から見た勝ち（1）か負け（0）を返す
+function playout(s, me, rng) {
+  let cur = s;
+  for (let n = 0; n < 90 && cur.passes < 2; n++) {
+    let moved = false;
+    for (let k = 0; k < 24 && !moved; k++) {
+      const r = Math.floor(rng() * SIZE), c = Math.floor(rng() * SIZE);
+      if (cur.b[r * SIZE + c] !== 0 || ownEye(cur.b, r, c, cur.turn)) continue;
+      const nx = play(cur, r, c);
+      if (nx) { cur = nx; moved = true; }
+    }
+    if (!moved) cur = pass(cur);
+  }
+  const sc = score(cur.b), w = sc.white + KOMI;
+  return (me === 1 ? sc.black > w : w > sc.black) ? 1 : 0;
+}
+
+// CPU。level 1=でたらめ 2=石を取れるなら取る 3=取る・逃げる・アタリにする 4=3＋自分からアタリにならない
+//      5=有力な手を、でたらめな打ち進めの勝率で選ぶ。null を返したらパス。ms は5の考える時間
+export function cpuMove(s, rng = Math.random, level = 3, ms = 900) {
+  const me = s.turn;
+  const sc0 = score(s.b);
+  const ahead = me === 1 ? sc0.black > sc0.white + KOMI : sc0.white + KOMI > sc0.black;
+  if ((s.passes === 1 && ahead) || s.moves > 120) return null;
+  if (level <= 2) {
+    const all = candidates(s, rng, false);
+    if (!all.length) return null;
+    if (level === 2) { const cap = all.filter((x) => x.t.captured > 0); if (cap.length) { const m = cap.reduce((a, b) => (b.t.captured > a.t.captured ? b : a)); return [m.r, m.c]; } }
+    const m = all[Math.floor(rng() * all.length)];
+    return [m.r, m.c];
+  }
+  const cands = candidates(s, rng, level >= 4);
+  if (!cands.length) return null;
+  cands.sort((a, b) => b.sc - a.sc);
+  if (level <= 4) return [cands[0].r, cands[0].c];
+  const top = cands.slice(0, 10).map((x) => ({ ...x, win: 0, n: 0 }));
+  const start = Date.now();
+  for (let k = 0; Date.now() - start < ms || k < top.length * 2; k++) {
+    const x = top[k % top.length];
+    const ns = { b: x.t.b, turn: opp(me), last: null, result: null, passed: null, moves: s.moves + 1, passes: 0, prev: key(s.b), caps: s.caps, detail: '' };
+    x.win += playout(ns, me, rng); x.n++;
+    if (k > 4000) break;
+  }
+  // 勝率に、石を取る・逃げるなどの点を少し足して選ぶ
+  const best = top.reduce((a, b) => (b.win / b.n + b.sc / 2000 > a.win / a.n + a.sc / 2000 ? b : a));
+  return [best.r, best.c];
 }

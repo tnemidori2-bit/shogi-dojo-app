@@ -72,7 +72,7 @@ export function mountGoLesson(root, nav) {
     if (b.dataset.act === 'home') nav.games();
     else if (b.dataset.act === 'list') list();
     else if (b.dataset.act === 'retry') { const i = el.querySelector('.topbar span')?.textContent; open(Number.parseInt(i, 10) - 1); }
-    else if (b.dataset.act === 'next') { b.dataset.go === 'play' ? nav.boardgame({ game: 'go', vs: 'cpu' }) : open(Number(b.dataset.go)); }
+    else if (b.dataset.act === 'next') { b.dataset.go === 'play' ? nav.boardgame({ game: 'go', vs: 'cpu', level: 1 }) : open(Number(b.dataset.go)); }
     else if (b.dataset.i !== undefined) open(Number(b.dataset.i));
   });
 

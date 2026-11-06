@@ -190,3 +190,8 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .lesson-msg.ok { background: #2d7a46; font-weight: bold; }
 .lesson-msg.pass { background: var(--accent); color: var(--ink); font-weight: bold; }
 .golesson .lessons { max-height: none; }
+.pick.level { font-size: 22px; min-height: 64px; justify-content: space-between; padding: 0 22px; }
+.pick.level.locked { opacity: .5; }
+.pick-level { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(420px, 100%); }
+.pick-level.hidden { display: none; }
+.level-note { font-size: 18px; font-weight: bold; color: var(--accent); }
