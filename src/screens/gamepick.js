@@ -18,9 +18,9 @@ export function mountGamePick(root, nav) {
     <div class="pick-vs hidden">
       <div class="opt-title"></div>
       <div class="pick-list">
-        <button class="pick" type="button" data-vs="two">${g.two}</button>
+        <button class="pick" type="button" data-vs="lesson">${g.lesson}<small>${g.lessonHint}</small></button>
         <button class="pick" type="button" data-vs="cpu">${g.cpu}</button>
-        <button class="pick hidden" type="button" data-vs="lesson">${g.lesson}</button>
+        <button class="pick" type="button" data-vs="two">${g.two}</button>
       </div>
       <button class="btn small" type="button" data-act="cancel">${T.back}</button>
     </div>
@@ -49,9 +49,8 @@ export function mountGamePick(root, nav) {
     if (b.dataset.game) {
       game = b.dataset.game;
       vs.querySelector('.opt-title').textContent = g[game];
-      vs.querySelector('[data-vs=lesson]').classList.toggle('hidden', game !== 'go');
       list.classList.add('hidden'); vs.classList.remove('hidden');
-    } else if (b.dataset.vs === 'lesson') nav.golesson();
+    } else if (b.dataset.vs === 'lesson') nav.boardlesson(game);
     else if (b.dataset.vs === 'cpu') showLevels();
     else if (b.dataset.vs) nav.boardgame({ game, vs: b.dataset.vs });
     else if (b.dataset.level) nav.boardgame({ game, vs: 'cpu', level: Number(b.dataset.level) });

@@ -103,7 +103,7 @@ test('囲碁：CPU同士で終局まで進む', () => {
   }
 });
 
-import { LESSONS, judge } from '../src/games/golessons.js';
+import { LESSONS, judge } from '../src/games/lessons.js';
 // 各レッスンの「正解の手」と「まちがいの手」
 const SOLVE = { place: [[4, 4]], liberty: [[3, 4]], capture1: [[4, 5]], corner: [[1, 0]], atari: [[4, 3]], escape: [[4, 5]], capture2: [[4, 6]] };
 const WRONG = { liberty: [[0, 0]], capture1: [[0, 0]], corner: [[8, 8]], atari: [[0, 0]], escape: [[0, 0]], capture2: [[0, 0]] };
@@ -175,4 +175,41 @@ test('レベル：勝つと次が開き、同じ段階の再勝利では開か�
   assert.equal(L.clearedLevel('go'), 5);
   assert.equal(L.unlockedLevel('go'), 5);
   delete globalThis.localStorage;
+});
+
+import { LESSON_SETS, startState } from '../src/games/lessons.js';
+const RULES_BY = { go: Go, othello: O, gomoku: G };
+test('レッスン（オセロ・五目）：正解の手でできる、すべての正解が置ける', () => {
+  for (const game of ['othello', 'gomoku']) {
+    for (const l of LESSON_SETS[game]) {
+      const base = startState(game, l);
+      const R = RULES_BY[game];
+      if (l.goal.type === 'cells') {
+        for (const [r, c] of l.goal.cells) { const n = R.play(base, r, c); assert.ok(n, `${l.id} ${r},${c}`); assert.ok(judge(l, base, n, r, c), l.id); }
+      } else if (l.goal.type === 'place') {
+        assert.ok(game === 'othello' && R.legalMoves(base.b, 1).length > 0, l.id);
+      } else if (l.goal.type === 'flips') {
+        const best = R.legalMoves(base.b, 1).reduce((a, b) => (b.flips.length > a.flips.length ? b : a));
+        const n = R.play(base, best.r, best.c); assert.ok(judge(l, base, n, best.r, best.c), l.id);
+        const other = R.legalMoves(base.b, 1).find((m) => m.flips.length < best.flips.length);
+        const n2 = R.play(base, other.r, other.c); assert.ok(!judge(l, base, n2, other.r, other.c), `wrong ${l.id}`);
+      } else if (l.goal.type === 'win') {
+        // 4つの両はしのどちらかで勝てる
+        const wins = []; for (let r = 0; r < 15; r++) for (let c = 0; c < 15; c++) { const n = R.play(base, r, c); if (n && n.result === 'black') wins.push([r, c]); }
+        assert.ok(wins.length >= 1, l.id);
+      }
+    }
+  }
+});
+test('レッスン（オセロ）：X打ちは正解にならず、他の手はおける', () => {
+  const l = LESSON_SETS.othello.find((x) => x.id === 'o-x');
+  const base = startState('othello', l);
+  const n = O.play(base, 1, 1); assert.ok(n); assert.ok(!judge(l, base, n, 1, 1));
+});
+test('レッスン（五目）：まちがいの手は正解にならない', () => {
+  for (const id of ['g-block4', 'g-open4', 'g-block3']) {
+    const l = LESSON_SETS.gomoku.find((x) => x.id === id);
+    const base = startState('gomoku', l);
+    const n = G.play(base, 0, 0); assert.ok(!judge(l, base, n, 0, 0), id);
+  }
 });

@@ -195,3 +195,4 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .pick-level { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(420px, 100%); }
 .pick-level.hidden { display: none; }
 .level-note { font-size: 18px; font-weight: bold; color: var(--accent); }
+.pick small { font-size: 13px; font-weight: normal; opacity: .75; margin-left: 4px; }

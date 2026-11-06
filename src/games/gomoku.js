@@ -9,7 +9,7 @@ export function newState() {
 }
 
 // (r,c) に p を置いたと仮定したとき、方向 (dr,dc) の連の長さと、空いている端の数
-function run(b, r, c, p, dr, dc) {
+export function run(b, r, c, p, dr, dc) {
   let len = 1, ends = 0;
   let y = r + dr, x = c + dc;
   while (inside(y, x) && b[y * SIZE + x] === p) { len++; y += dr; x += dc; }

@@ -6,7 +6,7 @@ import { totalStars, kyuOf, tsumeStars, openingStars, matchStars } from './core/
 import { applyStreak } from './shogi/drills.js';
 import { T } from './text.js';
 import { mountGamePick } from './screens/gamepick.js';
-import { mountGoLesson } from './screens/golesson.js';
+import { mountBoardLesson } from './screens/boardlesson.js';
 import { mountBoardGame } from './screens/boardgame.js';
 import { mountStart } from './screens/start.js';
 import { mountProfile } from './screens/profile.js';
@@ -161,7 +161,7 @@ async function recordMatch(res) {
 
 const nav = {
   games: () => show(mountGamePick),
-  golesson: () => show(mountGoLesson),
+  boardlesson: (game) => show(mountBoardLesson, game),
   boardgame: (cfg) => show(mountBoardGame, cfg),
   start: () => show(mountStart),
   profile: async () => { await switchTo(null); await show(mountProfile); },
