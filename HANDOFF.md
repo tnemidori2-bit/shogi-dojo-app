@@ -18,6 +18,7 @@
 - オセロ・五目並べ・囲碁（9路盤）とゲーム選択画面を追加（2026-11-05〜06）。レッスン8本は囲碁のみ。Mac で動作確認。**iPad での確認待ち**。コミット: 109e96d・3491b71・4ab2f00・1391f25。ルールは src/games/（othello.js・gomoku.js・go.js・golessons.js・board.js）、画面は src/screens/（gamepick.js・boardgame.js・golesson.js）。テストは tools/boardgames.test.mjs。決めごとは decisions.json の 2026-11-05-add-othello-gomoku・2026-11-06-add-go-and-lessons。
 - CPUを5段階にした（レベル制・勝つと次が開く）。コミット 6f928e4。levels.js が進み具合を localStorage に保存。**iPad での確認待ち**。
 - オセロ・五目に初級レッスン（5本ずつ）を追加、七並べ・スピード・UNO を追加（2026-11-06）。CPU5段階とあわせて公開済み。コミット 038bbb4・34f8d92・80aff95。レッスンは screens/boardlesson.js と games/lessons.js、カードは src/cards/ と screens/cardgames.js、テストは tools/cards.test.mjs。**iPad・iPhone での確認待ち**。
+- 人狼を追加（2026-11-06）。七並べ・スピード・UNOに「ルール」ボタンも追加。公開済み。コミット 0cd330e・a76fba7。ルールとCPUは src/games/werewolf.js、画面は src/screens/werewolf.js、テストは tools/werewolf.test.mjs。決めごとは decisions.json の 2026-11-06-werewolf。**iPad・iPhone での確認待ち**（占い師・騎士を引いた遊び方は画面で未確認）。
 
 ## 次にやること
 - iPad で確認：選択画面→各ゲーム→もどる、オセロ・五目・囲碁を終局まで（ふたり／CPU）、囲碁レッスン8本、ダブルタップ拡大が起きないこと、横縦向きで盤がはみ出さないこと。
