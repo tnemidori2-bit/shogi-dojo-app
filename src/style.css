@@ -196,3 +196,49 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .pick-level.hidden { display: none; }
 .level-note { font-size: 18px; font-weight: bold; color: var(--accent); }
 .pick small { font-size: 13px; font-weight: normal; opacity: .75; margin-left: 4px; }
+
+/* カードゲーム（七並べ・スピード・UNO） */
+.pick-head { font-size: 15px; opacity: .75; text-align: left; margin: 6px 4px -4px; }
+.pick { min-height: 72px; }
+.cardgame { --cw: min(56px, calc((100vw - 40px) / 6)); gap: 10px; }
+.cg-body { width: min(720px, 100%); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.cg-msg { min-height: 44px; display: flex; align-items: center; justify-content: center; text-align: center; background: var(--bg2); border-radius: 12px; padding: 6px 12px; width: 100%; font-size: 16px; line-height: 1.4; }
+.cpus { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; font-size: 16px; }
+.cpu { padding: 6px 12px; border-radius: 10px; background: var(--bg2); }
+.cpu.now { background: var(--accent); color: var(--ink); font-weight: bold; }
+.hand-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.pcard { position: relative; width: var(--cw); height: calc(var(--cw) * 1.4); padding: 0; border: 2px solid #999; border-radius: 8px; background: #fff; font-family: inherit; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-weight: bold; }
+.pcard.red { color: #c62828; } .pcard.black { color: #222; }
+.pcard .rk { font-size: calc(var(--cw) * .42); line-height: 1; } .pcard .st { font-size: calc(var(--cw) * .42); line-height: 1; }
+.pcard.back { background: repeating-linear-gradient(45deg, #2f6fb0, #2f6fb0 6px, #2a5f98 6px, #2a5f98 12px); border-color: #fff; }
+.pcard.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent); transform: translateY(-4px); }
+.pcard.sel { background: #ffe08a; }
+.hand-cards:not(.small) .pcard:not(.on):not(.back) { opacity: .55; }
+.hand-cards.small { gap: 4px; } .hand-cards.small .pcard { width: 34px; height: 48px; }
+.cardgame .actions { min-height: 56px; }
+.cg-result { width: 100%; background: var(--bg2); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+/* 七並べの場 */
+.tableau { width: 100%; display: flex; flex-direction: column; gap: 4px; }
+.srow { display: flex; gap: 2px; align-items: center; }
+.ssuit { width: 22px; font-size: 20px; text-align: center; background: #fff; border-radius: 4px; }
+.srow.red .ssuit, .srow.red .scell.on { color: #c62828; } .srow.black .ssuit, .srow.black .scell.on { color: #222; }
+.scell { flex: 1; min-width: 0; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(255,255,255,.3); border-radius: 4px; font-size: 13px; color: rgba(255,255,255,.35); }
+.scell.on { background: #fff; border: 1px solid #999; font-weight: bold; }
+/* スピード */
+.sp-opp, .sp-me { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 16px; }
+.sp-center { display: flex; gap: 24px; justify-content: center; margin: 6px 0; }
+.pile { padding: 6px; border: 3px solid transparent; border-radius: 14px; background: rgba(0,0,0,.2); }
+.pile .pcard { --cw: min(84px, calc((100vw - 120px) / 2)); pointer-events: none; }
+/* UNO */
+.uno-center { display: flex; gap: 16px; align-items: center; justify-content: center; }
+.ucard, .deck { --uw: min(64px, calc((100vw - 48px) / 6)); width: var(--uw); height: calc(var(--uw) * 1.5); border: 3px solid #fff; border-radius: 10px; font-family: inherit; font-weight: bold; font-size: calc(var(--uw) * .45); color: #fff; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.ucard.c-R, .curcolor.c-R { background: #d32f2f; } .ucard.c-Y, .curcolor.c-Y { background: #f2b500; color: #222; }
+.ucard.c-G, .curcolor.c-G { background: #2e9e4f; } .ucard.c-B, .curcolor.c-B { background: #1e63c9; }
+.ucard.c-W { background: linear-gradient(135deg, #d32f2f 25%, #f2b500 25% 50%, #2e9e4f 50% 75%, #1e63c9 75%); }
+.uno-hand .ucard { margin: 2px; } .uno-hand .ucard:not(.on) { opacity: .5; }
+.ucard.on { box-shadow: 0 0 0 3px var(--accent); transform: translateY(-4px); }
+.deck { background: #222; font-size: 15px; } .deck.on { box-shadow: 0 0 0 3px var(--accent); }
+.curcolor { padding: 8px 14px; border-radius: 12px; font-size: 18px; font-weight: bold; display: flex; flex-direction: column; align-items: center; }
+.curcolor small { font-size: 11px; opacity: .85; font-weight: normal; }
+.colorpick { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.colorpick .ucard { width: 84px; height: 64px; font-size: 18px; }
