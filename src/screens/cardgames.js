@@ -8,10 +8,12 @@ const g = T.cards;
 const html = String.raw;
 
 // ---- 共通の部品 ----
-function frame(root, title, extra = '') {
+function frame(root, title, extra = '', rulesKey = '') {
   const el = document.createElement('div');
   el.className = 'screen cardgame ' + extra;
-  el.innerHTML = html`<div class="topbar"><button class="btn small" type="button" data-act="back">${T.back}</button><span>${title}</span><span class="cg-status"></span></div><div class="cg-body"></div>`;
+  const rules = (g.rules[rulesKey] || []).map((t) => `<p>${t}</p>`).join('');
+  el.innerHTML = html`<div class="topbar"><button class="btn small" type="button" data-act="back">${T.back}</button><span>${title}</span><button class="btn small" type="button" data-act="rules">${g.rulesBtn}</button></div><div class="cg-status"></div><div class="cg-body"></div>
+    <div class="rules-overlay" hidden><div class="rules-box"><div class="title">${title}・${g.rulesTitle}</div>${rules}<button class="btn big" type="button" data-act="closerules">${g.rulesClose}</button></div></div>`;
   root.appendChild(el);
   return { el, body: el.querySelector('.cg-body'), status: el.querySelector('.cg-status') };
 }
@@ -29,6 +31,13 @@ function wire(el, nav, onAgain, onTap) {
   el.addEventListener('click', (ev) => {
     const b = ev.target.closest('button,[data-act]');
     if (!b) return;
+    if (b.dataset.act === 'rules' || b.dataset.act === 'closerules') {
+      const open = b.dataset.act === 'rules';
+      el.querySelector('.rules-overlay').hidden = !open;
+      el.classList.toggle('show-rules', open);
+      return;
+    }
+    if (el.classList.contains('show-rules')) return;
     if (b.dataset.act === 'back') nav.games();
     else if (b.dataset.act === 'again') onAgain();
     else onTap(b, ev);
@@ -37,7 +46,7 @@ function wire(el, nav, onAgain, onTap) {
 
 // ================= 七並べ =================
 export function mountSevens(root, nav) {
-  const { el, body, status } = frame(root, g.sevens);
+  const { el, body, status } = frame(root, g.sevens, '', 'sevens');
   let s, timer = null, dead = false, msg = '';
   const names = [g.you, 'CPU1', 'CPU2', 'CPU3'];
 
@@ -89,7 +98,7 @@ export function mountSevens(root, nav) {
 const SPEED_MS = { 1: 2800, 2: 1800, 3: 1000 };
 export function mountSpeed(root, nav, cfg = {}) {
   const speed = cfg.speed || 1;
-  const { el, body, status } = frame(root, `${g.speedTitle} ${g.speedNames[speed - 1]}`, 'speedgame');
+  const { el, body, status } = frame(root, `${g.speedTitle} ${g.speedNames[speed - 1]}`, 'speedgame', 'speed');
   let s, sel = null, dead = false, nextCpu = 0, stuckAt = 0, tick = null, note = '';
 
   function draw() {
@@ -111,6 +120,7 @@ export function mountSpeed(root, nav, cfg = {}) {
   }
   function loop() {
     if (dead || s.winner !== null) return;
+    if (el.classList.contains('show-rules')) { nextCpu += 120; if (stuckAt) stuckAt += 120; return; } // ルールを読んでいる間は止める
     const now = Date.now();
     if (Sp.stuck(s)) {
       if (!stuckAt) { stuckAt = now; draw(); }
@@ -149,7 +159,7 @@ export function mountSpeed(root, nav, cfg = {}) {
 // ================= UNO =================
 const COLOR_NAME = { R: 'あか', Y: 'きいろ', G: 'みどり', B: 'あお' };
 export function mountUno(root, nav) {
-  const { el, body, status } = frame(root, g.uno, 'unogame');
+  const { el, body, status } = frame(root, g.uno, 'unogame', 'uno');
   let s, timer = null, dead = false, msg = '', choosing = null;
   const names = [g.you, 'CPU1', 'CPU2', 'CPU3'];
 
