@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test tools/rules.test.mjs tools/engine.test.mjs tools/game.test.mjs tools/backup.test.mjs tools/boardgames.test.mjs tools/cards.test.mjs"
+    "test": "node --test tools/rules.test.mjs tools/engine.test.mjs tools/game.test.mjs tools/backup.test.mjs tools/boardgames.test.mjs tools/cards.test.mjs tools/werewolf.test.mjs"
   },
   "dependencies": {
     "idb-keyval": "6.3.0"

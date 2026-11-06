@@ -8,6 +8,7 @@ import { T } from './text.js';
 import { mountGamePick } from './screens/gamepick.js';
 import { mountBoardLesson } from './screens/boardlesson.js';
 import { mountSevens, mountSpeed, mountUno } from './screens/cardgames.js';
+import { mountWerewolf } from './screens/werewolf.js';
 import { mountBoardGame } from './screens/boardgame.js';
 import { mountStart } from './screens/start.js';
 import { mountProfile } from './screens/profile.js';
@@ -162,7 +163,7 @@ async function recordMatch(res) {
 
 const nav = {
   games: () => show(mountGamePick),
-  cardgame: (cfg) => show(cfg.game === 'sevens' ? mountSevens : cfg.game === 'speed' ? mountSpeed : mountUno, cfg),
+  cardgame: (cfg) => show(cfg.game === 'sevens' ? mountSevens : cfg.game === 'speed' ? mountSpeed : cfg.game === 'werewolf' ? mountWerewolf : mountUno, cfg),
   boardlesson: (game) => show(mountBoardLesson, game),
   boardgame: (cfg) => show(mountBoardGame, cfg),
   start: () => show(mountStart),

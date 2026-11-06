@@ -249,3 +249,19 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .rules-box .title { color: var(--ink); font-size: 24px; margin: 0 0 4px; }
 .rules-box p { margin: 0; font-size: 17px; line-height: 1.55; }
 .rules-box .btn.big { align-self: center; margin-top: 8px; }
+
+/* 人狼 */
+.wolfgame .cg-body { gap: 8px; }
+.wchips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; font-size: 15px; }
+.wchip { padding: 4px 10px; border-radius: 10px; background: var(--bg2); }
+.wchip.now { background: var(--accent); color: var(--ink); font-weight: bold; }
+.wchip.dead { opacity: .45; text-decoration: line-through; }
+.wrole { line-height: 1.5; }
+.wrole small { opacity: .85; font-size: 14px; }
+.wlog { width: 100%; height: min(34vh, 300px); overflow-y: auto; background: var(--bg2); border-radius: 12px; padding: 8px 12px; font-size: 16px; line-height: 1.5; text-align: left; -webkit-overflow-scrolling: touch; }
+.wl-day { font-weight: bold; margin-top: 6px; opacity: .8; }
+.wl-line { padding: 2px 0; }
+.wl-line.ev { font-weight: bold; }
+.wl-line.priv { color: var(--accent); font-weight: bold; }
+.wl-line.mine { text-decoration: underline; }
+.wl-line.small { font-size: 13px; opacity: .75; }

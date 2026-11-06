@@ -8,7 +8,7 @@ const g = T.cards;
 const html = String.raw;
 
 // ---- 共通の部品 ----
-function frame(root, title, extra = '', rulesKey = '') {
+export function frame(root, title, extra = '', rulesKey = '') {
   const el = document.createElement('div');
   el.className = 'screen cardgame ' + extra;
   const rules = (g.rules[rulesKey] || []).map((t) => `<p>${t}</p>`).join('');
@@ -25,9 +25,9 @@ const UNO_SYM = { skip: '⊘', rev: '⇄', d2: '+2', w: '★', w4: '+4' };
 const unoLabel = (c) => (typeof c.v === 'number' ? String(c.v) : UNO_SYM[c.v]);
 const unoCard = (c, opts = {}) =>
   `<button class="ucard c-${c.c}${opts.on ? ' on' : ''}" type="button" data-i="${opts.i ?? ''}"><span>${unoLabel(c)}</span></button>`;
-const result = (text, sub, extra = '') => html`<div class="cg-result"><div class="big-result">${text}</div>${sub ? `<div>${sub}</div>` : ''}${extra}<div class="actions"><button class="btn big" type="button" data-act="again">${T.games.again}</button><button class="btn" type="button" data-act="back">${T.back}</button></div></div>`;
+export const result = (text, sub, extra = '') => html`<div class="cg-result"><div class="big-result">${text}</div>${sub ? `<div>${sub}</div>` : ''}${extra}<div class="actions"><button class="btn big" type="button" data-act="again">${T.games.again}</button><button class="btn" type="button" data-act="back">${T.back}</button></div></div>`;
 
-function wire(el, nav, onAgain, onTap) {
+export function wire(el, nav, onAgain, onTap) {
   el.addEventListener('click', (ev) => {
     const b = ev.target.closest('button,[data-act]');
     if (!b) return;

@@ -19,6 +19,7 @@ export function mountGamePick(root, nav) {
       <button class="pick" type="button" data-card="sevens"><span class="emoji">♠</span>${T.cards.sevens}</button>
       <button class="pick" type="button" data-card="speed"><span class="emoji">⚡</span>${T.cards.speed}</button>
       <button class="pick" type="button" data-card="uno"><span class="emoji">🂡</span>${T.cards.uno}</button>
+      <button class="pick" type="button" data-card="werewolf"><span class="emoji">🐺</span>${T.cards.werewolf}</button>
     </div>
     <div class="pick-vs hidden">
       <div class="opt-title"></div>
@@ -43,6 +44,11 @@ export function mountGamePick(root, nav) {
     lv.querySelector('.levels').innerHTML = T.cards.speedNames.map((n, i) => `<button class="pick level" type="button" data-speed="${i + 1}">${n}</button>`).join('');
     game = null; list.classList.add('hidden'); lv.classList.remove('hidden');
   }
+  function showWolf() {
+    lv.querySelector('.opt-title').textContent = T.wolf.levelPick;
+    lv.querySelector('.levels').innerHTML = [5, 7].map((n, i) => `<button class="pick level" type="button" data-wolfn="${n}">${T.wolf.setups[i]}</button>`).join('');
+    game = null; list.classList.add('hidden'); lv.classList.remove('hidden');
+  }
   function showLevels() {
     lv.querySelector('.opt-title').textContent = g.levelPick;
     const open = unlockedLevel(game), cleared = clearedLevel(game);
@@ -58,6 +64,8 @@ export function mountGamePick(root, nav) {
     unlock(); sfx('tap');
     if (b.dataset.game === 'shogi') return nav.start();
     if (b.dataset.card === 'speed') return showSpeed();
+    if (b.dataset.card === 'werewolf') return showWolf();
+    if (b.dataset.wolfn) return nav.cardgame({ game: 'werewolf', n: Number(b.dataset.wolfn) });
     if (b.dataset.card) return nav.cardgame({ game: b.dataset.card });
     if (b.dataset.speed) return nav.cardgame({ game: 'speed', speed: Number(b.dataset.speed) });
     if (b.dataset.game) {
