@@ -20,6 +20,8 @@ export function mountGamePick(root, nav) {
       <button class="pick" type="button" data-card="speed"><span class="emoji">⚡</span>${T.cards.speed}</button>
       <button class="pick" type="button" data-card="uno"><span class="emoji">🂡</span>${T.cards.uno}</button>
       <button class="pick" type="button" data-card="werewolf"><span class="emoji">🐺</span>${T.cards.werewolf}</button>
+      <div class="pick-head">${g.otherHeading}</div>
+      <button class="pick" type="button" data-link="${g.islandUrl}"><span class="emoji">🏝</span>${g.island}</button>
     </div>
     <div class="pick-vs hidden">
       <div class="opt-title"></div>
@@ -62,6 +64,7 @@ export function mountGamePick(root, nav) {
     const b = ev.target.closest('button');
     if (!b) return;
     unlock(); sfx('tap');
+    if (b.dataset.link) { location.href = b.dataset.link; return; }
     if (b.dataset.game === 'shogi') return nav.start();
     if (b.dataset.card === 'speed') return showSpeed();
     if (b.dataset.card === 'werewolf') return showWolf();
