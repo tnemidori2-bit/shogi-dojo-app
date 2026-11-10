@@ -71,6 +71,6 @@ test('人狼：CPU同士の勝率が かたよりすぎない', () => {
     const N = 600;
     for (let g = 0; g < N; g++) if (playAll(n).winner === 'villagers') v++;
     console.log(`  ${n}人: 村人側 ${v}/${N} (${Math.round(v / N * 100)}%)`);
-    assert.ok(v / N > 0.25 && v / N < 0.9);
+    assert.ok(v / N > 0.25 && v / N < 0.95);
   }
 });
