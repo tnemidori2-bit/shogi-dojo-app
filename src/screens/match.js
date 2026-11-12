@@ -4,7 +4,9 @@ import { loadPieces, loadBook } from '../core/data.js';
 import { defOf, SIZE } from '../shogi/rules.js';
 import { legalMoves, HAND_ORDER } from '../shogi/engine.js';
 import { startGame, playMove, undoMoves, resign } from '../shogi/game.js';
-import { moveLabel, toUsi } from '../shogi/usi.js';
+import { moveLabel, toUsi, parseUsi, findLegal } from '../shogi/usi.js';
+import { positionCommand } from '../shogi/sfen.js';
+import { createShogiEngine, THINK_DEFAULT } from '../shogi/yaneuraou.js';
 import { sfx } from '../core/audio.js';
 import { toast } from '../ui.js';
 
@@ -23,6 +25,11 @@ export async function mountMatch(root, nav, cfg) {
   const hard = state.person?.difficulty === 'hard';
   const me = cfg.me;
   let game = startGame(cfg.handicap, pieces);
+  const initial = { board: game.board, hands: game.hands, turn: game.turn };
+  // 「ほんき」：やねうら王。読み込めなかったら、元の いちばん つよい AI（master）に切りかえる
+  let engine = null, engineFailed = false, loadPct = 0;
+  if (cfg.level === 'honki') engine = createShogiEngine({ onProgress: (p) => { loadPct = Math.round(p * 100); if (busy && !engineReady) { msg = T.honkiLoading(loadPct); paintMsg(); } } });
+  let engineReady = false;
   let mode = 'play'; // 'play' | 'review' | 'view'
   let sel = null, targets = [], pending = null, busy = false, hint = null, resignArmed = false;
   let undos = 0, hinted = false;
@@ -150,7 +157,21 @@ export async function mountMatch(root, nav, cfg) {
     if (game.result || game.turn === me) return;
     busy = true; hint = null; msg = T.aiThinking; draw();
     const t0 = Date.now();
-    const res = await ask({ type: 'move', level: cfg.level, game: slim(game), book });
+    let res = null;
+    if (engine && !engineFailed) {
+      if (!engineReady) { msg = T.honkiLoading(loadPct); paintMsg(); }
+      const ok = await engine.ready();
+      if (!el.isConnected) return;
+      engineReady = ok;
+      if (ok) {
+        const usi = await engine.best(positionCommand(initial, game.history.map((h) => toUsi(h.move))), cfg.think || THINK_DEFAULT);
+        if (!el.isConnected) return;
+        const mv = usi ? findLegal(game.board, game.hands, game.turn, pieces, parseUsi(usi)) : null;
+        if (mv) res = { type: 'move', move: mv };
+      }
+      if (!res) { engineFailed = true; toast(T.honkiFail); }
+    }
+    if (!res) res = await ask({ type: 'move', level: cfg.level === 'honki' ? 'master' : cfg.level, game: slim(game), book });
     if (res.type === 'error' || !res.move) { toast(T.loadFailed); busy = false; draw(); return; }
     // 考えた時間が短すぎると、指した手が分かりにくいので、少し間をおく
     const wait = Math.max(0, 450 - (Date.now() - t0));
@@ -266,5 +287,5 @@ export async function mountMatch(root, nav, cfg) {
   msg = game.turn === me ? T.yourTurn : '';
   draw();
   if (game.turn !== me) aiTurn();
-  return () => { worker.terminate(); el.remove(); };
+  return () => { engine?.stop(); worker.terminate(); el.remove(); };
 }

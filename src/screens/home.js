@@ -3,6 +3,7 @@ import { state, currentProfile, animalOf, MATCH_LEVELS } from '../core/store.js'
 import { loadJson, loadPieces } from '../core/data.js';
 import { totalStars, kyuOf, tsumeSolved, tsumeStars, openingStars, matchStars } from '../core/rank.js';
 import { HANDICAPS } from '../shogi/game.js';
+import { THINK_CHOICES, THINK_DEFAULT } from '../shogi/yaneuraou.js';
 import { sfx } from '../core/audio.js';
 import { toast } from '../ui.js';
 import { escapeHtml } from './profile.js';
@@ -49,8 +50,11 @@ export async function mountHome(root, nav) {
   const matchHtml = `<div class="tsume-set">
     <div class="tsume-head"><span class="lt">${T.matchSetup}</span><span class="stars">${stars(matchStars(state.person))}</span></div>
     <div class="opt-title">${T.levelTitle}</div>
-    <div class="opts" data-group="level">${MATCH_LEVELS.map((l) => `<button type="button" class="btn small" data-val="${l}">${T.levelLabel[l]}</button>`).join('')}</div>
+    <div class="opts" data-group="level">${[...MATCH_LEVELS, 'honki'].map((l) => `<button type="button" class="btn small" data-val="${l}">${T.levelLabel[l]}</button>`).join('')}</div>
     <p class="note">${T.levelNote}</p>
+    <div class="opt-title" id="think-title">${T.thinkTitle}</div>
+    <div class="opts" data-group="think">${THINK_CHOICES.map((ms) => `<button type="button" class="btn small" data-val="${ms}">${T.thinkLabel(ms)}</button>`).join('')}</div>
+    <p class="note" id="honki-note">${T.honkiNote}</p>
     <div class="opt-title" id="side-title">${T.sideTitle}</div>
     <div class="opts" data-group="side">${[0, 1].map((s_) => `<button type="button" class="btn small" data-val="${s_}">${T.sideLabel[s_]}</button>`).join('')}</div>
     <div class="opt-title">${T.handicapTitle}</div>
@@ -88,23 +92,27 @@ export async function mountHome(root, nav) {
     if (panels[k]) { sfx('tap'); try { sessionStorage.setItem('homeTab', k); } catch {} open(k); } else { sfx('no'); toast(T.comingSoon); }
   }));
   // たいきょくの設定
-  const cfg = { level: mp.level, side: mp.side, handicap: mp.handicap };
+  const savedThink = (() => { try { return Number(localStorage.getItem('honkiMs')); } catch { return 0; } })();
+  const cfg = { level: mp.level, side: mp.side, handicap: mp.handicap, think: THINK_CHOICES.includes(savedThink) ? savedThink : THINK_DEFAULT };
   const paintOpts = () => {
     el.querySelectorAll('#match .opts').forEach((g) => g.querySelectorAll('button').forEach((b) => b.classList.toggle('on', String(cfg[g.dataset.group]) === b.dataset.val)));
     const handi = cfg.handicap !== 'none';
     el.querySelector('#match [data-group="side"]').classList.toggle('hidden', handi);
     el.querySelector('#side-title').classList.toggle('hidden', handi);
     el.querySelector('#handicap-note').classList.toggle('hidden', !handi);
+    for (const id of ['think-title', 'honki-note']) el.querySelector('#' + id).classList.toggle('hidden', cfg.level !== 'honki');
+    el.querySelector('#match [data-group="think"]').classList.toggle('hidden', cfg.level !== 'honki');
   };
   el.querySelectorAll('#match .opts button').forEach((b) => b.addEventListener('click', () => {
     const g = b.parentElement.dataset.group;
-    cfg[g] = g === 'side' ? Number(b.dataset.val) : b.dataset.val;
+    cfg[g] = g === 'side' || g === 'think' ? Number(b.dataset.val) : b.dataset.val;
+    if (g === 'think') { try { localStorage.setItem('honkiMs', String(cfg.think)); } catch { /* ignore */ } }
     sfx('tap'); paintOpts();
   }));
   paintOpts();
   el.querySelector('#match-start')?.addEventListener('click', () => {
     sfx('ok');
-    nav.match({ level: cfg.level, handicap: cfg.handicap, me: cfg.handicap === 'none' ? cfg.side : 0 });
+    nav.match({ level: cfg.level, handicap: cfg.handicap, me: cfg.handicap === 'none' ? cfg.side : 0, think: cfg.think });
   });
   el.querySelectorAll('[data-op]').forEach((b) => b.addEventListener('click', () => { sfx('ok'); nav.opening(b.dataset.op, b.dataset.mode); }));
   el.querySelectorAll('[data-problem]').forEach((b) => b.addEventListener('click', () => { sfx('ok'); nav.tsume(b.dataset.tsume, b.dataset.problem); }));
