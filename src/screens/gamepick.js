@@ -15,6 +15,7 @@ export function mountGamePick(root, nav) {
       <button class="pick" type="button" data-game="othello"><span class="emoji">⚫</span>${g.othello}</button>
       <button class="pick" type="button" data-game="gomoku"><span class="emoji">⚪</span>${g.gomoku}</button>
       <button class="pick" type="button" data-game="go"><span class="emoji">◎</span>${g.go}</button>
+      <button class="pick" type="button" data-chess="1"><span class="emoji">♞\uFE0E</span>${g.chess}</button>
       <div class="pick-head">${g.cardsHeading}</div>
       <button class="pick" type="button" data-card="sevens"><span class="emoji">♠</span>${T.cards.sevens}</button>
       <button class="pick" type="button" data-card="speed"><span class="emoji">⚡</span>${T.cards.speed}</button>
@@ -66,6 +67,7 @@ export function mountGamePick(root, nav) {
     unlock(); sfx('tap');
     if (b.dataset.link) { location.href = b.dataset.link; return; }
     if (b.dataset.game === 'shogi') return nav.start();
+    if (b.dataset.chess) return nav.chess({});
     if (b.dataset.card === 'speed') return showSpeed();
     if (b.dataset.card === 'werewolf') return showWolf();
     if (b.dataset.wolfn) return nav.cardgame({ game: 'werewolf', n: Number(b.dataset.wolfn) });

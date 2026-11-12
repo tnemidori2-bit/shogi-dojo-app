@@ -265,3 +265,24 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--paper)
 .wl-line.priv { color: var(--accent); font-weight: bold; }
 .wl-line.mine { text-decoration: underline; }
 .wl-line.small { font-size: 13px; opacity: .75; }
+
+/* チェス */
+.chess { --cs: min(calc(100vw - 16px), 560px, calc(100vh - 290px)); }
+@supports (height: 100dvh) { .chess { --cs: min(calc(100vw - 16px), 560px, calc(100dvh - 290px)); } }
+.chess .ginfo, .chess .gmsg { width: var(--cs); }
+.cboard { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: var(--cs); height: var(--cs); border: 3px solid var(--line); border-radius: 4px; touch-action: manipulation; }
+.ccell { position: relative; padding: 0; margin: 0; border: 0; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; font-family: inherit; }
+.ccell.lt { background: #f0d9b5; } .ccell.dk { background: #b58863; }
+.ccell.last { background: #cdd26a; } .ccell.dk.last { background: #aaa23a; }
+.ccell.sel { background: #7fc4e8; } .ccell.dk.sel { background: #5aa8d4; }
+.ccell.chk { background: #f08a80; } .ccell.dk.chk { background: #d9604f; }
+.ccell:disabled { opacity: 1; }
+.ccell i { position: absolute; width: 28%; height: 28%; border-radius: 50%; background: rgba(40, 90, 50, .55); pointer-events: none; }
+.ccell.cap::after { content: ''; position: absolute; inset: 4%; border: 4px solid rgba(40, 90, 50, .6); border-radius: 50%; pointer-events: none; }
+.cp { font-size: calc(var(--cs) / 8 * .82); line-height: 1; pointer-events: none; font-family: "Apple Symbols", "Segoe UI Symbol", "Noto Sans Symbols 2", "DejaVu Sans", sans-serif; }
+.cp.w { color: #fff; text-shadow: 1px 0 #222, -1px 0 #222, 0 1px #222, 0 -1px #222, 1px 1px #222, -1px -1px #222, 1px -1px #222, -1px 1px #222; }
+.cp.b { color: #1c1c1c; text-shadow: 0 0 1px #fff; }
+.cp.pp { font-size: 34px; vertical-align: middle; }
+.chess-rules { width: min(100%, 560px); display: grid; gap: 4px; text-align: left; font-size: 17px; line-height: 1.5; overflow-y: auto; max-height: calc(100vh - 220px); }
+.cr-h { font-weight: bold; color: var(--accent); margin-top: 8px; } .cr-p { font-size: 26px; font-family: "Apple Symbols", sans-serif; margin: 0 2px 0 0; }
+.c-about { font-size: 12px; opacity: .6; max-width: 420px; text-align: center; margin-top: 8px; }

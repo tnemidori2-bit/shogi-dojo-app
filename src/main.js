@@ -10,6 +10,7 @@ import { mountBoardLesson } from './screens/boardlesson.js';
 import { mountSevens, mountSpeed, mountUno } from './screens/cardgames.js';
 import { mountWerewolf } from './screens/werewolf.js';
 import { mountBoardGame } from './screens/boardgame.js';
+import { mountChess } from './screens/chess.js';
 import { mountStart } from './screens/start.js';
 import { mountProfile } from './screens/profile.js';
 import { mountAdult } from './screens/adult.js';
@@ -166,6 +167,7 @@ const nav = {
   cardgame: (cfg) => show(cfg.game === 'sevens' ? mountSevens : cfg.game === 'speed' ? mountSpeed : cfg.game === 'werewolf' ? mountWerewolf : mountUno, cfg),
   boardlesson: (game) => show(mountBoardLesson, game),
   boardgame: (cfg) => show(mountBoardGame, cfg),
+  chess: (cfg) => show(mountChess, cfg),
   start: () => show(mountStart),
   profile: async () => { await switchTo(null); await show(mountProfile); },
   adult: () => show(mountAdult),
