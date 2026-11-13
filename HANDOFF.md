@@ -11,7 +11,7 @@
 - アイコンと書き出し・読み込みを実装済み（2026-10-23）。iPad で確認済み。
 - AI を強くした（2026-10-26）：強さ5段階（AI 20級〜5級くらい）、定跡、探索の高速化、成った駒の前進の評価。Mac で自己対戦と画面を確認。**iPad での確認待ち**。
 - 平手の飛・角の位置を直した（decisions.json の 2026-10-23-hirate-fix）。盤の向きが変わっている。
-- 公開: https://shogi-dojo.pages.dev （GitHub tnemidori2-bit/shogi-dojo の main に push すると自動公開）
+- 公開: https://shogi-dojo.pages.dev （GitHub tnemidori2-bit/shogi-dojo-app の main に push すると自動公開。2026-11-13 に古い shogi-dojo から引っ越した。経緯は decisions.json の 2026-11-13-move-to-new-repo）
 - 設計の正本: SPEC.md（第7章が段階分け）
 - 置き場所: ~/game/shogi-dojo
 

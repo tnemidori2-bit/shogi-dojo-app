@@ -455,6 +455,14 @@
       "source": "引き継ぎ書_将棋道場にチェスと将棋「本気」レベルを追加（作業2・5〜7）",
       "problem": "今の AI とは別に、本格的な強さの相手がほしい。思考は自作せず、既存のエンジンをブラウザ内で動かす",
       "decision": "エンジンは npm の @mizarjp/yaneuraou.k-p 7.6.3-alpha.0（GPL-3.0、評価関数 SuishoPetite 2021-11 入り、wasm 約1.4MB。2022年のalpha版）を public/engines/yaneuraou/ に置いた（満さんが k-p を選んだ。halfkp は wasm が580KBしかなく本物の水匠5が入っているか疑わしいので使わない）。対局の「つよさ」に「ほんき」を追加（MATCH_LEVELS には足さないので、★の数・級の計算・既存の記録は変わらない。勝ち数は wins.honki に入るだけ）。考える時間は1・3・10秒から選び（初期3秒、localStorage の honkiMs に覚える）。局面は SFEN（src/shogi/sfen.js、駒落ちも）で、position sfen ... moves ... として送り、go byoyomi で考えさせる。エンジンの手は findLegal で合法か確かめてから指す。読み込めない・合法でない手が来たときは、元の master の AI に切りかえて、お知らせを出す。取り違え：引き継ぎ書は「Worker の中で動かす」だったが、このビルドは Worker の中で読み込むと準備が終わらず止まった（Chrome で確認）。画面と同じ場所で読み込み、考える仕事はエンジン自身の別スレッド（pthread）に任せる形にした（考えている間の画面の止まりは最大約0.13秒）。複数スレッドに必要な COOP/COEP ヘッダーを public/_headers と vite の dev/preview に追加（外部読み込みは無いのを確認）。NetworkDelay を0にして、考える時間＝えらんだ時間にした（そのままだと約1.1秒ひかれた）。定跡ファイルは入れない。LICENSE・README・画面に出所を書いた。評価関数ファイルだけの配布条件は未確認。Macの Chrome で、エンジン単体と対局画面（後手を持ち、先手の ▲2六歩 まで）を確認。iPad の Safari は未確認（このビルドの対応ブラウザは Chrome と Firefox と書かれている）。強さ（アマ高段者を上回るか）は測っていない"
+    },
+    {
+      "id": "2026-11-13-move-to-new-repo",
+      "date": "2026-11-13",
+      "title": "GPLで公開するため、メールを noreply にした新しい置き場（shogi-dojo-app）に引っ越した",
+      "source": "満さんの指示（公開前の秘密情報の確認のあと）",
+      "problem": "チェスの Stockfish と 将棋「ほんき」の やねうら王 が GPL-3.0 のため、リポジトリを公開（public）にする。公開前に調べると、秘密情報は無かったが、全32コミットの作者メールが本物のアドレスで、テスト用データに実名の名前があった",
+      "decision": "履歴を git filter-branch で書き換え（作者・記録者のメールを GitHub の noreply 〈数字のID+ユーザー名@users.noreply.github.com〉に、tools/backup.test.mjs の名前を架空の名前に）。強制 push だと古い履歴が GitHub に残る可能性があるので、満さんが GitHub Desktop で新しい非公開リポジトリ shogi-dojo-app を作って（Publish repository）送った。Cloudflare Pages は、プロジェクトを消さずに、設定の Git リポジトリの「切断」→「接続」でつなぎ先だけを替えた（先に仮のプロジェクトで試し、切断のあとに接続できることを確かめた）。URL（shogi-dojo.pages.dev）も iPad の記録も変わらず、止まった時間も無かった。Cloudflare の新しい画面の「Continue with GitHub」は Pages ではなく Workers を作るので、Pages は『レガシー Pages ワークフロー』の入口から作る。バックアップは ~/game/shogi-dojo-backup-20261113（作業ツリーと全履歴の bundle）。このパソコンの git の user.email も noreply に変えた。残り（満さんが行う）：仮のプロジェクト shogi-dojo-app の削除、GitHub の Cloudflare アプリから古い shogi-dojo を外す、古い shogi-dojo の削除、shogi-dojo-app を public にする。画面のソース表示のURLも shogi-dojo-app に直した"
     }
   ]
 }

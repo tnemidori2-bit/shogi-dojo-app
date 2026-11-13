@@ -173,7 +173,7 @@ export const T = {
     asBlack: 'コンピュータと（あなたは 黒・あとから）',
     two: 'ふたりで',
     rules: 'ルールを よむ',
-    about: 'コンピュータは Stockfish（GPL-3.0）、ルールは chess.js（BSD-2）。ソースは github.com/tnemidori2-bit/shogi-dojo',
+    about: 'コンピュータは Stockfish（GPL-3.0）、ルールは chess.js（BSD-2）。ソースは github.com/tnemidori2-bit/shogi-dojo-app',
     white: '白', black: '黒',
     turn: (c) => `${c}の ばん`,
     thinking: 'かんがえ中…',
